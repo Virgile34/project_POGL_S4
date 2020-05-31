@@ -208,10 +208,14 @@ public class Case {
     /**
      * 
      * change l'etat de la case si possible (pour la secher)
+     * @return : true si la case a pu etre secher
      */
-    public void asseche() {
-        if (this.e == Etat.INONDE)
+    public boolean asseche() {
+        if (this.e == Etat.INONDE){
             this.e = Etat.NORMALE;
+            return true;
+        }
+        return false;
     }
 
 

@@ -7,6 +7,8 @@ import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import Exception.HorsLimite;
+
 /**
  * notre modele (ici c'est un jeu)
  */
@@ -23,9 +25,8 @@ public class Jeu extends Observable {
     private ArrayList<Joueur> players = new ArrayList<>();  //les joueurs de la partie
     private int nbCaseRest;                                 //le nombre de case non submerge (pour pouvoir arrete le jeu dans un premier temps)
     public final float level;                               //entre 0 et 1, (1-probabilite) de trouver une cle sur la case (level = 1 => probailite = 0)
-
-
-
+    private Joueur jActif; // a qui c'est le tour
+    private int pos_jActif = 0;
     /**
      * Constructeur :
      * 
@@ -59,6 +60,11 @@ public class Jeu extends Observable {
         }
         //init les joueurs (doit etre fais apres car le joueur "s'ajoute" dans la case quand il se crer)
         for (int i = 0 ; i < nbPlayers; i++) this.players.add(new Joueur(this, 0, i));
+        try {this.jActif = this.players.get(0);}
+        catch (Exception e){
+            System.out.println("erreur en creant le JEU, pas de joueurs...");
+            System.exit(1);
+        }
     }
 
 
@@ -99,12 +105,12 @@ public class Jeu extends Observable {
      * @return : la case a la postion (i, j) dans le plateau
      * @throws ValueException
      */
-    public Case getCase(int i, int j) throws ValueException {
+    public Case getCase(int i, int j) throws HorsLimite {
         try { 
             return this.plateau[i][j];
         }
-        catch (ValueException e) {
-            throw new ValueException(String.format("(%d, %d) est en dehors du plateau de jeu de taille (%d, %d)", i, j, this.getLine(), this.getCol()));
+        catch (ArrayIndexOutOfBoundsException e) {
+            throw new HorsLimite(String.format("(%d, %d) est en dehors du plateau de jeu de taille (%d, %d)", i, j, this.getLine(), this.getCol()));
         }
     }
     
@@ -114,7 +120,7 @@ public class Jeu extends Observable {
      * @return  : la case du plateau ayant les coordonnes de c
      * @throws ValueException
      */
-    public Case getCase(Case c) throws ValueException {
+    public Case getCase(Case c) throws HorsLimite {
         return this.getCase(c.getX(), c.getY());
     }
 
@@ -221,4 +227,64 @@ public class Jeu extends Observable {
         }
     }
 
+
+
+
+
+
+
+
+
+
+    boolean asseche = false;
+
+    /**
+     * declanche la fin du tour du joueur a qui c'est le tour...
+     */
+    public void boutonFDT() {
+        this.jActif.finDuTour();
+        this.pos_jActif = (this.pos_jActif + 1) % this.getJoueurs().size();
+        this.jActif = this.getJoueur(this.pos_jActif);
+        System.out.println("fin du tour, c'est a " + (this.jActif.num));
+    }
+
+    public void bouton_fl_gauche() {
+        if (this.asseche){
+            this.jActif.asseche(this.jActif.caseLeft());
+            this.asseche = false;
+        }
+        else this.jActif.deplaceGauche();
+    }
+
+    public void bouton_fl_droite() {
+        if (this.asseche) {
+            this.jActif.asseche(this.jActif.caseRight());
+            this.asseche = false;
+        } 
+        else this.jActif.deplaceDroite();
+    }
+
+    public void bouton_fl_bas() {
+        if (this.asseche) {
+            this.jActif.asseche(this.jActif.caseDown());
+            this.asseche = false;
+        } 
+        else this.jActif.deplaceBas();
+    }
+
+    public void bouton_fl_haut() {
+        if (this.asseche) {
+            this.jActif.asseche(this.jActif.caseUp());
+            this.asseche = false;
+        } else
+            this.jActif.deplaceHaut();
+    }
+
+    public void bouton_asseche() {
+        if (this.asseche) {
+            this.jActif.asseche();
+            this.asseche = false;
+        }
+        this.asseche = true;
+    }
 }

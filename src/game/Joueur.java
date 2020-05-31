@@ -3,6 +3,8 @@ package game;
 // import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
+import Exception.HorsLimite;
+
 public class Joueur {
     private Jeu jeu;                        //le joueur est associe a un jeu
     private Case position;                  //la position du joueur
@@ -24,7 +26,12 @@ public class Joueur {
         nb++;
         this.num = nb;
         this.jeu = jeu;
-        this.position = this.jeu.getCase(i, j);
+        try {
+            this.position = this.jeu.getCase(i, j);
+        }
+        catch (HorsLimite e) {
+            System.out.println("ERREUR : position du joueur lors de sa creation...");
+        }
         this.position.setPlayer(this);
         this.cles = new ArrayList<Cle>();
         this.artefacts = new ArrayList<Artefact>();
@@ -53,78 +60,131 @@ public class Joueur {
 
 
     /**
-     * place la joueur dans la case du plateau de coordonnes de celle de pos 
-     * @param pos
+     * 
+     * @return : la case du plateau au dessus de celle du joueur, null si il n'y en a pas
      */
-    private void moveto(Case pos) {
-        if (this.asAction() && !pos.isSubmerger()){
-            this.position.takePlayer(this);
-            this.position = pos;
-            this.position.setPlayer(this);
-            this.actionPerformed++;   
-            System.out.println(String.format("Case de J%1d = %s, action av FDT = %1d ", this.num, this.getPos().toString(), 3-this.actionPerformed));
+    public Case caseUp() {
+        try {
+            return this.jeu.getCase(this.getPos().getX() - 1, this.getPos().getY());
+        } catch (HorsLimite e) {
+            return null;
         }
     }
 
     /**
      * 
-     * @return true si le joueur peut encore effectue des actions pendant le tour (3 possible au total)
+     * @return : la case du plateau en bas de celle du joueur, null si il n'y en a pas
      */
-    private boolean asAction(){
-        return 3-this.actionPerformed > 0;
+    public Case caseDown() {
+        try {
+            return this.jeu.getCase(this.getPos().getX() + 1, this.getPos().getY());
+        } catch (HorsLimite e) {
+            return null;
+        }
     }
+
+    /**
+     * 
+     * @return : la case du plateau a droite de celle du joueur, null si il n'y en a pas
+     */
+    public Case caseRight() {
+        try {
+            return this.jeu.getCase(this.getPos().getX(), this.getPos().getY() + 1);
+        } catch (HorsLimite e) {
+            return null;
+        }
+    }
+
+    /**
+     * 
+     * @return : la case du plateau a gauche de celle du joueur, null si il n'y en a pas
+     */
+    public Case caseLeft() {
+        try {
+            return this.jeu.getCase(this.getPos().getX(), this.getPos().getY() - 1);
+        } catch (HorsLimite e) {
+            return null;
+        }
+    }
+
+    /**
+     * 
+     * @return true si le joueur peut encore effectue des actions pendant le tour (3
+     *         possible au total)
+     */
+    private boolean asAction() {
+        return 3 - this.actionPerformed > 0;
+    }
+
+
+
+    /**
+     * place la joueur dans la case du plateau de coordonnes de celle de pos 
+     * @param pos
+     */
+    private void moveto(Case pos) {
+
+        if (pos != null && this.asAction() && !pos.isSubmerger()){
+            this.position.takePlayer(this);
+            this.position = pos;
+            this.position.setPlayer(this);
+            this.actionPerformed++;   
+            System.out.println(String.format("J%d : action av FDT = %1d ", this.num, 3-this.actionPerformed));
+        }
+    }
+
+
 
     /**
      * deplace le joueur vers le haut (donc a la ligne "d'au dessus", la ligne precedente)
      */
     public void deplaceHaut() {
-        int x = this.position.getX();
-        if (x > 0){
-            Case newC = this.jeu.getCase(x-1, this.position.getY());
-            this.moveto(newC);
-        }
+        this.moveto(this.caseUp());
     }
 
     /**
      * deplace le joueur vers le bas
      */
     public void deplaceBas() {
-        int x = this.position.getX();
-        if (x+1 < this.jeu.getLine()) {
-            Case newC = this.jeu.getCase(x + 1, this.position.getY());
-            this.moveto(newC);
-        }
+        this.moveto(this.caseDown());
     }
 
     /**
      * deplace le joueur vers la gauche
      */
     public void deplaceGauche() {
-        int y = this.position.getY();
-        if (y > 0){
-            Case newC = this.jeu.getCase(this.position.getX(), y-1);
-            this.moveto(newC);
-        }
+        this.moveto(this.caseLeft());
     }
 
     /**
      * deplace le joueur vers la droite
      */
     public void deplaceDroite() {
-        int y = this.position.getY();
-        if (y+1 < this.jeu.getCol()){
-            Case newC = this.jeu.getCase(this.position.getX(), y + 1);
-            this.moveto(newC);
-        }
+        this.moveto(this.caseRight());
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * asseche la case sur laquelle se tient le joueur
      */
     public void asseche(){
         if (this.asAction()){
-            this.actionPerformed++;
-            this.position.asseche();
+            if (this.position.asseche()){
+                this.actionPerformed++;
+                System.out.println(String.format("J%d : action av FDT = %1d ", this.num, 3-this.actionPerformed));
+            }
         }
     }
 
@@ -134,8 +194,10 @@ public class Joueur {
      */
     public void asseche(Case c){
         if (this.asAction()) {
-            this.actionPerformed++;
-            c.asseche();
+            if (c.asseche()){
+                this.actionPerformed++;
+                System.out.println(String.format("J%d : action av FDT = %1d ", this.num, 3-this.actionPerformed));
+            }
         }
     }
 
@@ -152,19 +214,14 @@ public class Joueur {
         }
     }
 
-    /**
-     * declanche la fin du tour du joueur actif
-     */
-    private void FDT() {
+
+    public void finDuTour(){
         for (int i = 0; i < 3; i++) {
-            if (this.jeu.finDeJeu()) break;
+            if (this.jeu.finDeJeu())
+                break;
             this.jeu.inondeRdm();
         }
         this.jeu.notifyObservers();
-    }
-
-    public void finDuTour(){
-        this.FDT();
         this.actionPerformed = 0;
     }
 }

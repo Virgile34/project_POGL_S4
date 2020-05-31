@@ -4,6 +4,9 @@ import game.Jeu;
 
 
 import javax.swing.*;
+
+import Exception.HorsLimite;
+
 import java.awt.*;
 
 public class VueJeu extends JPanel implements Observer {
@@ -52,7 +55,11 @@ public class VueJeu extends JPanel implements Observer {
         /** Pour chaque cellule... */
         for(int i=0; i< jeu.getLine(); i++) {
             for(int j=0; j< jeu.getCol(); j++) {
-                this.jeu.getCase(i, j).paint(g, TAILLE);
+                try {                    
+                    this.jeu.getCase(i, j).paint(g, TAILLE);
+                } catch (HorsLimite e) {
+                    System.out.println("impossible error in VueJeu.paintComponent");
+                }
             }
         }
     }

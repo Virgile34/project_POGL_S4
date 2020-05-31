@@ -35,43 +35,14 @@ public class ControleJs extends JPanel {
 		this.add(boutonHaut);	
 		this.add(boutonAsseche);
 
-		boutonFDT.addActionListener(e -> { this.finDuTour(); });
-        boutonBas.addActionListener(e -> { this.deplaceBas(); });
-        boutonGauche.addActionListener(e -> { this.deplaceGauche(); });
-        boutonDroite.addActionListener(e -> { this.deplaceDroite(); });
-        boutonHaut.addActionListener(e -> { this.deplaceHaut(); });
-        boutonAsseche.addActionListener(e -> { this.asseche(); });
-	}
-
-	/**
-	 * declanche la fin du tour du joueur a qui c'est le tour...
-	 */
-	public void finDuTour(){
-		this.j.getJoueur(tourj).finDuTour();
-		tourj = (tourj + 1) % this.j.getJoueurs().size();
-		System.out.println("fin du tour, c'est a " + (tourj+1));
+		boutonFDT.addActionListener(e -> { this.j.boutonFDT(); });
+        boutonBas.addActionListener(e -> { this.j.bouton_fl_bas(); });
+        boutonGauche.addActionListener(e -> { this.j.bouton_fl_gauche(); });
+        boutonDroite.addActionListener(e -> { this.j.bouton_fl_droite(); });
+        boutonHaut.addActionListener(e -> { this.j.bouton_fl_haut(); });
+        boutonAsseche.addActionListener(e -> { this.j.bouton_asseche(); });
 	}
 
 
-	public void deplaceGauche(){
-		this.j.getJoueur(tourj).deplaceGauche();
-	}
-	
-	public void deplaceDroite() {
-		this.j.getJoueur(tourj).deplaceDroite();
-	}
-
-	public void deplaceBas() {
-		this.j.getJoueur(tourj).deplaceBas();
-	}
-	
-
-	public void deplaceHaut() {
-		this.j.getJoueur(tourj).deplaceHaut();
-	}
-
-	public void asseche() {
-		this.j.getJoueur(tourj).asseche();
-	}
          
 }
