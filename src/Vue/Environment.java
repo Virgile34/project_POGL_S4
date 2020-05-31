@@ -174,6 +174,7 @@ public class Environment {
 
 
 
+
         beginFrame.getContentPane().add(panel);
         beginFrame.setLocationRelativeTo(null);
         beginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
