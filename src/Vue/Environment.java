@@ -1,8 +1,6 @@
 package Vue;
 
-import game.ControleJs;
 import game.Jeu;
-import game.Joueur;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +11,7 @@ public class Environment {
      * de l'application graphique.
      */
     private JFrame frame;
+    private JFrame beginFrame;
 
     /**
      * VueGrille et VueCommandes sont deux classes définies plus loin, pour
@@ -20,7 +19,6 @@ public class Environment {
      */
     private VueJeu ileGraphique;
     private ControleJs commandes;
-    private Joueur j1;
 
     public int m;
     public int n;
@@ -28,10 +26,12 @@ public class Environment {
     public int lvl;
 
     /** Construction d'une vue attachée à un modèle. */
-    public Environment(Jeu ile) {
-        /** Définition de la fenêtre principale. */
-        frame = new JFrame("Jeu de l'Île Interdite");
-        this.frame = frame;
+    public Environment(){
+        this.init_beginFrame();
+    }
+
+    private void init_Frame(Jeu ile) {
+        this.frame = new JFrame("Jeu de l'Île Interdite");
         frame.setBackground(Color.BLACK);
         /**
          * On précise un mode pour disposer les différents éléments à
@@ -74,11 +74,12 @@ public class Environment {
          *  - Préciser que la fenêtre doit bien apparaître à l'écran.
          */
         frame.pack();
+        frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
 
-    public Environment (){
+    public void init_beginFrame (){
         /**
          * Environement du debut. Lorsque tout les paramètres sont entré, on lance le jeu!
          */
@@ -87,10 +88,10 @@ public class Environment {
         nbPlayers=0;
         lvl=0;
 
-        frame = new JFrame("Jeu de l'Île Interdite");
-        frame.setBackground(Color.BLACK);
-        frame.setLayout(new FlowLayout());
-        frame.setSize(600, 200);
+        beginFrame = new JFrame("Jeu de l'Île Interdite");
+        beginFrame.setBackground(Color.BLACK);
+        beginFrame.setLayout(new FlowLayout());
+        beginFrame.setSize(600, 200);
 
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(4,2));
@@ -164,25 +165,21 @@ public class Environment {
 
         Valide.addActionListener(e -> {
             if(m!=0 && n!=0 && nbPlayers!=0 && lvl!=0){
-                init_env(m,n,nbPlayers,lvl);
+                beginFrame.setVisible(false);
+                Jeu jeu = new Jeu(m, n, nbPlayers, lvl);
+                System.out.println(jeu.toString());
+                this.init_Frame(jeu);
             }
         });
 
 
 
-        frame.getContentPane().add(panel);
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+        beginFrame.getContentPane().add(panel);
+        beginFrame.setLocationRelativeTo(null);
+        beginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        beginFrame.setVisible(true);
 
 
-    }
-    public void init_env(int m, int n, int nbPlayers, int level){
-        frame.setVisible(false);
-        Jeu ile = new Jeu(m, n, nbPlayers, level);
-        String s = ile.toString();
-        System.out.println(s);
-        Environment env = new Environment(ile);
     }
 
 }

@@ -22,8 +22,8 @@ public class VueJeu extends JPanel implements Observer {
          * l'interface, calculée en fonction du nombre de cellules et de la
          * taille d'affichage.
          */
-        Dimension dim = new Dimension(TAILLE* jeu.getM(),
-                TAILLE* jeu.getN());
+        Dimension dim = new Dimension(TAILLE* jeu.getLine(),
+                TAILLE* jeu.getCol());
         this.setPreferredSize(dim);
     }
 
@@ -50,8 +50,8 @@ public class VueJeu extends JPanel implements Observer {
     public void paintComponent(Graphics g) {
         super.repaint();
         /** Pour chaque cellule... */
-        for(int i=0; i< jeu.getM(); i++) {
-            for(int j=0; j< jeu.getN(); j++) {
+        for(int i=0; i< jeu.getLine(); i++) {
+            for(int j=0; j< jeu.getCol(); j++) {
                 this.jeu.getCase(i, j).paint(g, TAILLE);
             }
         }

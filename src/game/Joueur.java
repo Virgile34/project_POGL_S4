@@ -4,16 +4,22 @@ package game;
 import java.util.ArrayList;
 
 public class Joueur {
-    private Jeu jeu;
-    private Case position;
-    private ArrayList<Cle> cles;
-    private ArrayList<Artefact> artefacts;
-    public int num;
-    private static int nb = 0;
-    private int actionPerformed;
+    private Jeu jeu;                        //le joueur est associe a un jeu
+    private Case position;                  //la position du joueur
+    private ArrayList<Cle> cles;            //les cles en possesion du joueur
+    private ArrayList<Artefact> artefacts;  //les artefacts en possesion du joueur
+    public int num;                         //le numero du joueur (le 1er cree est le 1)
+    private static int nb = 0;              //nombre de joueur cree
+    private int actionPerformed;            //nombre d'action restante effectue depuis le debut du tour
 
 
-
+    /**
+     * Constructeur :
+     * 
+     * @param jeu   : le jeu a associe au joueur
+     * @param i     : la position en x dans le plateau (lignes)
+     * @param j     : la position en y dans le plateau (colones)
+     */
     public Joueur(Jeu jeu, int i, int j) {
         nb++;
         this.num = nb;
@@ -25,11 +31,31 @@ public class Joueur {
         this.actionPerformed = 0;
     }
 
+    /**
+     * Constructeur :
+     * 
+     * @param jeu   : le jeu associe
+     * @param pos   : la cas ou place le joueur (utilise en realite la case du plateau de coordonnes pos)
+     */
     public Joueur(Jeu jeu, Case pos) {
         this(jeu, pos.getX(), pos.getY());
     }
 
 
+    /**
+     * renvoie la case du joueur
+     * 
+     * @return
+     */
+    public Case getPos() {
+        return this.position;
+    }
+
+
+    /**
+     * place la joueur dans la case du plateau de coordonnes de celle de pos 
+     * @param pos
+     */
     private void moveto(Case pos) {
         if (this.asAction() && !pos.isSubmerger()){
             this.position.takePlayer(this);
@@ -40,10 +66,17 @@ public class Joueur {
         }
     }
 
+    /**
+     * 
+     * @return true si le joueur peut encore effectue des actions pendant le tour (3 possible au total)
+     */
     private boolean asAction(){
         return 3-this.actionPerformed > 0;
     }
 
+    /**
+     * deplace le joueur vers le haut (donc a la ligne "d'au dessus", la ligne precedente)
+     */
     public void deplaceHaut() {
         int x = this.position.getX();
         if (x > 0){
@@ -52,14 +85,20 @@ public class Joueur {
         }
     }
 
+    /**
+     * deplace le joueur vers le bas
+     */
     public void deplaceBas() {
         int x = this.position.getX();
-        if (x+1 < this.jeu.getM()) {
+        if (x+1 < this.jeu.getLine()) {
             Case newC = this.jeu.getCase(x + 1, this.position.getY());
             this.moveto(newC);
         }
     }
 
+    /**
+     * deplace le joueur vers la gauche
+     */
     public void deplaceGauche() {
         int y = this.position.getY();
         if (y > 0){
@@ -68,63 +107,64 @@ public class Joueur {
         }
     }
 
+    /**
+     * deplace le joueur vers la droite
+     */
     public void deplaceDroite() {
         int y = this.position.getY();
-        if (y+1 < this.jeu.getN()){
+        if (y+1 < this.jeu.getCol()){
             Case newC = this.jeu.getCase(this.position.getX(), y + 1);
             this.moveto(newC);
         }
     }
 
+    /**
+     * asseche la case sur laquelle se tient le joueur
+     */
     public void asseche(){
         if (this.asAction()){
             this.actionPerformed++;
             this.position.asseche();
-            // System.out.println("Position : [" + this.position.getX() + " : " + this.position.getY() + "], action avant FDT : " + (3 -this.actionPerformed));
         }
     }
 
-    // public void ZoneArtefact(){            //moche mais intelliJ veut pas de switch avec une constante d'enum
-    //     for(Cle c : this.cles){
-    //         if (c.sameAs(this.position.getTypeCase())) {
-    //             if (c.name().equals(Cle.Air.name())) {
-    //                 this.artefacts.add(Artefact.Air);
-    //                 break;
-    //             }
+    /**
+     * Asseche la case c
+     * @param c
+     */
+    public void asseche(Case c){
+        if (this.asAction()) {
+            this.actionPerformed++;
+            c.asseche();
+        }
+    }
 
-    //             if (c.name().equals(Cle.Eau.name())) {
-    //                 this.artefacts.add(Artefact.Eau);
-    //                 break;
-    //             }
-
-    //             if (c.name().equals(Cle.Terre.name())) {
-    //                 this.artefacts.add(Artefact.Eau);
-    //                 break;
-    //             }
-
-    //             this.artefacts.add(Artefact.Feu);
-    //         }
-    //     }
-    // }
-
+    /**
+     * cherche une cle a la position du joueur
+     */
     public void chercheCle(){
         if (this.position.asCle() && this.asAction()) {
-            float rd = this.jeu.Rdm.nextFloat();
+            float rd = this.jeu.rd.nextFloat();
             if (rd > this.jeu.level) {
                 this.cles.add(this.position.takeCle());
             }
+            this.actionPerformed++;
         }
     }
 
-
-    public void finDuTour(){
-        this.jeu.FDT();
-        this.actionPerformed = 0;
-        // System.out.println("Position : [" + this.position.getX() + " : " + this.position.getY() + "], action avant FDT : " + (3 -this.actionPerformed));
-
+    /**
+     * declanche la fin du tour du joueur actif
+     */
+    private void FDT() {
+        for (int i = 0; i < 3; i++) {
+            if (this.jeu.finDeJeu()) break;
+            this.jeu.inondeRdm();
+        }
+        this.jeu.notifyObservers();
     }
 
-    public Case getPos(){
-        return this.position;
+    public void finDuTour(){
+        this.FDT();
+        this.actionPerformed = 0;
     }
 }

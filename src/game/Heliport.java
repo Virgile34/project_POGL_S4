@@ -2,6 +2,9 @@ package game;
 
 import java.awt.*;
 
+/**
+ * classe heliport, on redefinit quelque fonction
+ */
 public class Heliport extends Case {
 
 	public Heliport(Jeu plateau, int x, int y) {

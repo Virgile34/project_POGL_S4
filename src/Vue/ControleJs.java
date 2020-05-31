@@ -1,15 +1,26 @@
-package game;
-
+package Vue;
 
 import javax.swing.*;
 
-public class ControleJs extends JPanel {
-	private Jeu j;
-	private int tourj = 0;
+import game.Jeu;
 
+/**
+ * class ControleJs :
+ * 
+ * controleur de notre jeu de l'ile interdite
+ */
+public class ControleJs extends JPanel {
+	private Jeu j;			//le jeu qui lui est associe
+	private int tourj = 0;	//a qui c'est le tour
+
+	/**
+	 * 
+	 * @param j : le jeu 
+	 */
 	public ControleJs(Jeu j) {
 		this.j=j;
 
+		//Les boutons de controles (fin du tour, deplacement...)
 		JButton boutonFDT = new JButton("FDT");
 		JButton boutonGauche = new JButton("<");
 		JButton boutonDroite = new JButton(">");
@@ -24,7 +35,7 @@ public class ControleJs extends JPanel {
 		this.add(boutonHaut);	
 		this.add(boutonAsseche);
 
-		boutonFDT.addActionListener(e -> { this.FDT(); });
+		boutonFDT.addActionListener(e -> { this.finDuTour(); });
         boutonBas.addActionListener(e -> { this.deplaceBas(); });
         boutonGauche.addActionListener(e -> { this.deplaceGauche(); });
         boutonDroite.addActionListener(e -> { this.deplaceDroite(); });
@@ -32,8 +43,10 @@ public class ControleJs extends JPanel {
         boutonAsseche.addActionListener(e -> { this.asseche(); });
 	}
 
-
-	public void FDT(){
+	/**
+	 * declanche la fin du tour du joueur a qui c'est le tour...
+	 */
+	public void finDuTour(){
 		this.j.getJoueur(tourj).finDuTour();
 		tourj = (tourj + 1) % this.j.getJoueurs().size();
 		System.out.println("fin du tour, c'est a " + (tourj+1));
