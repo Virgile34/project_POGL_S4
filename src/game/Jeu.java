@@ -11,6 +11,7 @@ import java.util.Random;
 
 import Exception.HorsLimite;
 
+
 /**
  * notre modele (ici c'est un jeu)
  */
@@ -25,12 +26,14 @@ public class Jeu extends Observable {
     private final int nbCol;                                //nombres de colones
     
     private ArrayList<Joueur> players = new ArrayList<>();  //les joueurs de la partie
+    private ArrayList<Case> artefactsToPickUp = new ArrayList<>();
+    // private ArrayList<Case> artefacts;
+    private Heliport H;
     private int nbCaseRest;                                 //le nombre de case non submerge (pour pouvoir arrete le jeu dans un premier temps)
     public final float level;                               //entre 0 et 1, (1-probabilite) de trouver une cle sur la case (level = 1 => probailite = 0)
     private Joueur jActif; // a qui c'est le tour
     private int pos_jActif = 0;
     private boolean InGame = true;;
-    private int nbArtefactToPickUp = 4;;
 
     /**
      * Constructeur :
@@ -48,21 +51,7 @@ public class Jeu extends Observable {
         this.plateau = new Case[nbLine][nbCol];
         this.nbCaseRest = nbLine*nbCol;
 
-        ArrayList<Case> artefacts = this.initArtefact();    //init les artefacts
-        //init les cases du plateau
-        for (int i = 0; i < this.nbLine; i++) {
-            for (int j = 0; j < this.nbCol; j++) {
-                Case c = new Case(this, i,j);
-                for (Case art : artefacts) {
-                    if (c.equals(art)){
-                        c = art;
-                        artefacts.remove(c);
-                        break;
-                    }
-                }
-                this.plateau[i][j] = c;
-            }
-        }
+        this.initPlateau();
         //init les joueurs (doit etre fais apres car le joueur "s'ajoute" dans la case quand il se crer)
         for (int i = 0 ; i < nbPlayers; i++) this.players.add(new Joueur(this, 0, i));
         try {this.jActif = this.players.get(0);}
@@ -147,6 +136,30 @@ public class Jeu extends Observable {
         return this.getCase(c.getX(), c.getY());
     }
 
+    /**
+     * 
+     * @param i
+     * @param j
+     * @return : la case a la postion (i, j) dans le plateau
+     * @throws ArrayIndexOutOfBoundsException
+     * ATTENTION : version dev, soyez certrain que les coordonnes sont dans le plateau
+     */
+    public Case getCasedev(int i, int j) throws ArrayIndexOutOfBoundsException{
+        return this.plateau[i][j];
+    }
+
+    /**
+     * 
+     * @param c
+     * @return : la case du plateau ayant les coordonnes de c
+     * @throws ValueException
+     * ATTENTION : version dev, soyez certrain que les coordonnes sont dans le plateau
+     */
+    public Case getCasedev(Case c) throws ArrayIndexOutOfBoundsException {
+        return this.getCasedev(c.getX(), c.getY());
+    }
+
+
 
     /**
      * 
@@ -164,6 +177,21 @@ public class Jeu extends Observable {
                     return true;
                 }
             }
+        }
+        return false;
+    }
+
+    private int nbArtefactToPickUp() {
+        return this.artefactsToPickUp.size();
+    }
+
+    public boolean testWin() {
+        if (this.nbArtefactToPickUp() == 0) {
+            for (Joueur j : this.getJoueurs()) {
+                if (!j.getPos().isHeli())
+                    return false;
+            }
+            return true;
         }
         return false;
     }
@@ -206,16 +234,36 @@ public class Jeu extends Observable {
     }
 
 
+    /**
+     * initialise toute les cases du plateau, place les artefacts et l'Heliport
+     */
+    private void initPlateau(){
+        this.initCase();
+        this.initArtefact();
+        this.initHeliport();
+    }
+
+    /**
+     * init les cases du plateau (vides)
+     */
+    private void initCase() {
+        for (int i = 0; i < this.nbLine; i++) {
+            for (int j = 0; j < this.nbCol; j++) {
+                Case c = new Case(i, j);
+                this.plateau[i][j] = c;
+            }
+        }
+    }
 
 
 
     /**
      * initialise les cases contenant les artefacts et en renvoie le tableau
      */
-    private ArrayList<Case> initArtefact() {
+    private void initArtefact() {
         ArrayList<Integer> intArts = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            int art = this.rd.nextInt(5 - i);
+        for (int i = 0; i < 4; i++) {
+            int art = this.rd.nextInt(4 - i);
             for (int val = 0; val <= art; val++) {
                 if (intArts.contains(val))
                     art++;
@@ -223,32 +271,37 @@ public class Jeu extends Observable {
             intArts.add(art);
         }
 
-        ArrayList<Case> artefacts = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+
+        for (int i = 0; i < 4; i++) {
             boolean find = false;
             Case c = null;
 
             while (!find) {
                 int r1 = rd.nextInt(nbLine);
                 int r2 = rd.nextInt(nbCol);
-                if (intArts.get(i) != 4)
-                    c = new Case(this, r1, r2, Artefact.makeFromInt(intArts.get(i)));
-                else
-                    c = new Heliport(this, r1, r2);
-
-                boolean temp = true;
-                for (Case art : artefacts) {
-                    if (c.equals(art)) {
-                        temp = false;
-                        break;
-                    }
+                if(this.getCasedev(r1, r2).isNormal()){
+                    c = new Case(r1, r2, Artefact.makeFromInt(intArts.get(i)));
+                    find = true;
                 }
-
-                find = temp;
             }
-            artefacts.add(c);
+            this.artefactsToPickUp.add(c);
+            this.plateau[c.getX()][c.getY()] = c;
         }
-        return artefacts;
+    }
+
+    public void initHeliport(){
+        Case c = null;
+        boolean find = false;
+        while (!find) {
+            int r1 = rd.nextInt(nbLine);
+            int r2 = rd.nextInt(nbCol);
+            if (this.getCasedev(r1, r2).isNormal()) {
+                c = new Heliport(r1, r2);
+                find = true;
+            }
+        }
+        this.artefactsToPickUp.add(c);
+        this.plateau[c.getX()][c.getY()] = c;
     }
 
 
@@ -265,16 +318,21 @@ public class Jeu extends Observable {
     public void boutonFDT() {
         if (!InGame) return;
 
+        if (this.testWin()) {
+            this.InGame = false;
+            this.env.set_endFrame(true);
+        }
         this.jActif.chercheCle();
 
-        if (this.jActif.takeArtefact()) {
-            this.nbArtefactToPickUp--;
+        Artefact a = this.jActif.takeArtefact();
+        if (a != null) {
+            this.artefactsToPickUp.remove(a);
         }
 
 
         if (this.jActif.finDuTour()) {
             this.InGame = false;
-            this.env.set_endFrame();
+            this.env.set_endFrame(false);
         }
         this.pos_jActif = (this.pos_jActif + 1) % this.getJoueurs().size();
         this.jActif = this.getJoueur(this.pos_jActif);
@@ -333,15 +391,7 @@ public class Jeu extends Observable {
             this.asseche = true;
     }
 
-    public boolean testWin(){
-        if (this.nbArtefactToPickUp == 0) {
-            for(Joueur j : this.getJoueurs()) {
-                if(!j.getPos().isHeli()) return false;
-            }
-            return true;
-        }
-        return false;
-    }
+
 
 
     public void paint(Graphics g, int TAILLE){

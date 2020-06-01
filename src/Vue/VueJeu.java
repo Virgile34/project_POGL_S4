@@ -63,7 +63,7 @@ public class VueJeu extends JPanel implements Observer {
         String s = "C'est au joueur " + jeu.getNumJoueur() + " de jouer";
         g.drawString(s, 10, jeu.getLine() * TAILLE + 100);
 
-        int resteAction = 3 - jeu.getActionLeft();
+        int resteAction = jeu.getActionLeft();
         String s1 = "Il vous reste " + resteAction + " actions à réaliser avant la fin du tour";
         g.drawString(s1, 10, jeu.getLine() * TAILLE + 140);
         /** Pour chaque cellule... */

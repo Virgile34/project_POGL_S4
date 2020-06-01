@@ -34,13 +34,11 @@ public class Case {
     /**
      * Constructeur :
      * 
-     * @param jeu : le jeu associe a la case
      * @param x   : pos x
      * @param y   : pos y
      * @param art : un artefact
-     * @param cle : une clef
      */
-    public Case(Jeu jeu, int x, int y, Artefact art, Cle cle) {
+    public Case(int x, int y, Artefact art) {
         this.x = x;
         this.y = y;
         this.art = art;
@@ -51,32 +49,17 @@ public class Case {
         this.joueurs = new ArrayList<>(); // pas de joueur
     }
 
-    /**
-     * Constructeur :
-     * 
-     * pas de clef sur la case cree
-     * 
-     * @param jeu : le jeu associe a la case
-     * @param x   : pos x
-     * @param y   : pos y
-     * @param art : un artefact
-     * 
-     */
-    public Case(Jeu jeu, int x, int y, Artefact art) {
-        this(jeu, x, y, art, null);
-    }
 
     /**
      * Constructeur :
      * 
-     * pas de clef ou d'artefact sur la case cree
+     * pas d'artefact sur la case cree
      * 
-     * @param jeu : le jeu associe a la case
      * @param x   : pos x
      * @param y   : pos y
      */
-    public Case(Jeu jeu, int x, int y) {
-        this(jeu, x, y, null, null);
+    public Case(int x, int y) {
+        this(x, y, null);
     }
 
 
@@ -205,6 +188,14 @@ public class Case {
         return false;
     }
 
+    /**
+     * 
+     * @return : true si la case ne contient pas d'ertefact et n'est pas l'heliport
+     */
+    public boolean isNormal() {
+        return !this.asArtefact();
+    }
+
     
 
 
@@ -246,7 +237,7 @@ public class Case {
     }
 
     /**
-     * retire et renvoie l'artefact present sur la case (peut renvoyer null)
+     * retire et renvoie l'artefact present sur la case (null si rien n'est ramasse)
      * 
      * @return : l'artefact present sur la case
      */

@@ -225,14 +225,15 @@ public class Joueur {
 
 
 
-    public boolean takeArtefact(){
+    public Artefact takeArtefact(){
+        Artefact a = null;
         if (this.position.asArtefact() && 
             this.cles.contains(this.position.getArtefact().toCle())) {
-                this.artefacts.add(this.position.takeArtefact());
+                a = this.position.takeArtefact();
+                this.artefacts.add(a);
                 System.out.println(String.format("J%d a recupere l'artefact : %s", this.num, Utile.last(this.artefacts).toString()));
-                return true;
         }
-        return false;
+        return a;
     }
 
 

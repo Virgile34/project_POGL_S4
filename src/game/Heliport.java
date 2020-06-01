@@ -9,8 +9,8 @@ import java.awt.*;
  */
 public class Heliport extends Case {
 
-	public Heliport(Jeu plateau, int x, int y) {
-		super(plateau, x, y);
+	public Heliport(int x, int y) {
+		super(x, y);
 	}
 
 	public Color getColor() {
@@ -24,6 +24,11 @@ public class Heliport extends Case {
 
 	public boolean isHeli() {
 		return true;
+	}
+
+	@Override
+	public boolean isNormal() {
+		return false;
 	}
 
 	@Override
