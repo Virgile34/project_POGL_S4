@@ -137,7 +137,7 @@ public class Joueur {
             this.position = pos;
             this.position.setPlayer(this);
             this.actionPerformed++;   
-            System.out.println(String.format("J%d : action av FDT = %1d ", this.num, 3-this.actionPerformed));
+            this.launchFDT();
         }
     }
 
@@ -188,12 +188,7 @@ public class Joueur {
      * asseche la case sur laquelle se tient le joueur
      */
     public void asseche(){
-        if (this.asAction()){
-            if (this.position.asseche()){
-                this.actionPerformed++;
-                System.out.println(String.format("J%d : action av FDT = %1d ", this.num, 3-this.actionPerformed));
-            }
-        }
+        this.asseche(this.position);
     }
 
     /**
@@ -204,7 +199,7 @@ public class Joueur {
         if (this.asAction()) {
             if (c != null && c.asseche()){
                 this.actionPerformed++;
-                System.out.println(String.format("J%d : action av FDT = %1d ", this.num, 3-this.actionPerformed));
+                this.launchFDT();
             }
         }
     }
@@ -215,7 +210,8 @@ public class Joueur {
     public boolean chercheCle(){
         float rd = this.jeu.rd.nextFloat();
         if (rd > this.jeu.level) {
-            Cle c = Cle.makeFromInt(this.jeu.rd.nextInt(4));
+            int n = this.jeu.rd.nextInt(this.jeu.nbArtefactToPickUp());
+            Cle c = this.jeu.artefactsToPickUp().get(n).getArtefact().toCle();
             this.cles.add(c);
             System.out.println(String.format("J%d a trouve la cle %s", this.num, c.toString()));
             return true;
@@ -237,16 +233,10 @@ public class Joueur {
     }
 
 
-    public boolean finDuTour(){
-        ArrayList<Case> inonderCeTour = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            inonderCeTour.add(this.jeu.inondeRdm(inonderCeTour));
-            if (this.jeu.testFinDeJeu())
-                return true;
-        }
-        this.jeu.notifyObservers();
+
+
+    public void resetActionPerfo() {
         this.actionPerformed = 0;
-        return false;
     }
 
 
@@ -265,4 +255,16 @@ public class Joueur {
         if (this.caseLeft() != null) a.add(this.caseLeft());
         return a;
     }
+
+    public boolean canMove(){
+        ArrayList<Case> adj = this.adjacents();
+        for(Case c: adj) if (!c.isSubmerger()) return true;
+        return false;
+    }
+
+    private void launchFDT(){
+        if (!this.asAction()) this.jeu.boutonFDT();
+    }
+
+
 }

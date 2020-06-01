@@ -209,7 +209,7 @@ public class Environment {
 
     }
 
-    public void set_endFrame(boolean win){
+    public void set_endFrame(String s){
         /**
          * Environement du debut. Lorsque tout les paramètres sont entré, on lance le jeu!
          */
@@ -230,13 +230,7 @@ public class Environment {
         panel.setLayout(new GridLayout(2,3));
 
 
-        JLabel label_perdu = new JLabel("Perdu");
-
-        if (win) {
-            label_perdu.setText("Gagne !");
-        }
-        else 
-            label_perdu.setText("Perdu...");
+        JLabel label_perdu = new JLabel(s);
         JButton boutonRetry = new JButton("Reessayer");
         JButton boutonReset = new JButton("Nouvelle partie");
         JButton boutonQuit = new JButton("Quitter");

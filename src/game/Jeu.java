@@ -161,40 +161,7 @@ public class Jeu extends Observable {
 
 
 
-    /**
-     * 
-     * @return  : true si le jeu est finis
-     */
-    public boolean testFinDeJeu() {
-        if (this.nbCaseRest == 0) {
-            System.out.println("tout les cases sont submerge, perdu !");
-            return true;
-        }
-        if (!this.getJoueurs().isEmpty()) {
-            for (Joueur j : this.getJoueurs()) {
-                if (j.getPos().isSubmerger()){
-                    System.out.println(String.format("le joueur j%1d est mort..., perdu !", j.num));
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
-    private int nbArtefactToPickUp() {
-        return this.artefactsToPickUp.size();
-    }
-
-    public boolean testWin() {
-        if (this.nbArtefactToPickUp() == 0) {
-            for (Joueur j : this.getJoueurs()) {
-                if (!j.getPos().isHeli())
-                    return false;
-            }
-            return true;
-        }
-        return false;
-    }
 
 
     /**
@@ -292,7 +259,7 @@ public class Jeu extends Observable {
     }
 
     public void initHeliport(){
-        Case c = null;
+        Heliport c = null;
         boolean find = false;
         while (!find) {
             int r1 = rd.nextInt(nbLine);
@@ -302,7 +269,7 @@ public class Jeu extends Observable {
                 find = true;
             }
         }
-        this.artefactsToPickUp.add(c);
+        this.H = c;
         this.plateau[c.getX()][c.getY()] = c;
     }
 
@@ -322,24 +289,95 @@ public class Jeu extends Observable {
 
         if (this.testWin()) {
             this.InGame = false;
-            this.env.set_endFrame(true);
+            this.env.set_endFrame("Gagne !");
         }
+        
         this.jActif.chercheCle();
 
         Artefact a = this.jActif.takeArtefact();
         if (a != null) {
-            this.artefactsToPickUp.remove(a);
+            this.artefactsToPickUp.remove(this.jActif.getPos());
         }
 
 
-        if (this.jActif.finDuTour()) {
+        this.finTour();
+        String s = testPerdu();
+        if (s != null) {
             this.InGame = false;
-            this.env.set_endFrame(false);
+            this.env.set_endFrame(s);
         }
+
         this.pos_jActif = (this.pos_jActif + 1) % this.getJoueurs().size();
         this.jActif = this.getJoueur(this.pos_jActif);
         this.asseche = false;
         System.out.println("fin du tour, c'est a " + (this.jActif.num));
+    }
+
+    /**
+     * 
+     * @return : true si le jeu est finis
+     */
+    public String testPerdu() {
+        String s = null;
+        // if (this.nbCaseRest == 0) {
+        //     return "tout les cases sont submerge, perdu !";
+        // } (dans tout les cases si y a plus de cases tout les joueurs sont morts...)
+
+        //test si l'heliport est pas submerger
+        if (this.H.isSubmerger()){
+            return "l'Heliphort est submerger..., perdu";
+        }
+
+        // test si une des zones artefacts est pas submerger
+        for(Case c : this.artefactsToPickUp) {
+            if (c.isSubmerger())
+            return String.format("la zone %s est submerger..., perdu", c.getArtefact().toString());
+        }
+
+        for (Joueur j : this.getJoueurs()) {
+            //test si joueur ne c'est pas noye
+            if (j.getPos().isSubmerger()) {
+                return String.format("le joueur j%1d est mort..., perdu !", j.num);
+            }
+            //test si le joueur peut bouger
+            if (!j.canMove()){
+                return String.format("le joueur j%1d ne peut plus bouger..., perdu !", j.num);
+            }
+        }
+        return null;
+    }
+
+
+
+    public int nbArtefactToPickUp() {
+        return this.artefactsToPickUp.size();
+    }
+
+    public ArrayList<Case> artefactsToPickUp() {
+        return this.artefactsToPickUp;
+    }
+
+    private boolean testWin() {
+        if (this.nbArtefactToPickUp() == 0) {
+            for (Joueur j : this.getJoueurs()) {
+                if (!j.getPos().isHeli())
+                    return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private void finTour() {
+        ArrayList<Case> inonderCeTour = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            inonderCeTour.add(this.inondeRdm(inonderCeTour));
+            // if (this.jeu.testPerdu())
+            // return true;
+        }
+        this.notifyObservers();
+        this.jActif.resetActionPerfo();
+        // return false;
     }
 
     public void bouton_fl_gauche() {
