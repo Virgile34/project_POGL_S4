@@ -9,16 +9,17 @@ import java.awt.*;
  */
 public enum Artefact {
 	//Artefact possible et leur couleur associe
-	Air(Color.YELLOW), Eau(Color.BLUE), Feu(Color.RED), Terre(Color.GREEN);
+	Air(Color.YELLOW, Cle.Air), Eau(Color.BLUE, Cle.Eau), Feu(Color.RED, Cle.Feu), Terre(Color.GREEN, Cle.Terre);
 
 	// couleur associe a l'artefact
 	Color c;
-
+	Cle key;
 	/**
 	 * Constructeur :
 	 */
-	Artefact(Color c) {
-		this.c = c;	//initialise la couleur 
+	Artefact(Color c, Cle key) {
+		this.c = c;	//initialise la couleur
+		this.key = key; 
 	}
 
 	/**
@@ -42,6 +43,9 @@ public enum Artefact {
 			case 3 : return Artefact.Terre;
 			default : throw new ValueException(String.format("%d not in {0,1,2,3} in makeFromInt", n));
 		}
+	}
 
+	public Cle toCle(){
+		return this.key;
 	}
 }

@@ -1,6 +1,7 @@
 package game;
 
 
+import Vue.Environment;
 import Vue.Observable;
 import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 
@@ -27,6 +28,8 @@ public class Jeu extends Observable {
     public final float level;                               //entre 0 et 1, (1-probabilite) de trouver une cle sur la case (level = 1 => probailite = 0)
     private Joueur jActif; // a qui c'est le tour
     private int pos_jActif = 0;
+    private boolean InGame;
+
     /**
      * Constructeur :
      * 
@@ -42,6 +45,7 @@ public class Jeu extends Observable {
         this.nbCol = nbCol;
         this.plateau = new Case[nbLine][nbCol];
         this.nbCaseRest = nbLine*nbCol;
+        this.InGame = true;
 
         this.initArtefact();    //init le artefacts
         //init les cases du plateau
@@ -81,6 +85,10 @@ public class Jeu extends Observable {
             s = s + "\n";
         }
         return s;
+    }
+
+    public boolean InGame(){
+        return this.InGame;
     }
 
     /**
@@ -129,7 +137,7 @@ public class Jeu extends Observable {
      * 
      * @return  : true si le jeu est finis
      */
-    public boolean finDeJeu() {
+    public boolean testFinDeJeu() {
         if (this.nbCaseRest == 0) {
             System.out.println("tout les cases sont submerge, perdu !");
             return true;
@@ -229,26 +237,31 @@ public class Jeu extends Observable {
 
 
 
+    private boolean asseche = false;
+    private Environment env;
 
-
-
-
-
-
-
-    boolean asseche = false;
-
+    public void setEnvironment(Environment env) {
+        this.env = env;
+    };
     /**
      * declanche la fin du tour du joueur a qui c'est le tour...
      */
     public void boutonFDT() {
-        this.jActif.finDuTour();
+        if (!InGame) return;
+
+        if (this.jActif.finDuTour()) {
+            this.InGame = false;
+            this.env.set_endFrame();
+        }
         this.pos_jActif = (this.pos_jActif + 1) % this.getJoueurs().size();
         this.jActif = this.getJoueur(this.pos_jActif);
+        this.asseche = false;
         System.out.println("fin du tour, c'est a " + (this.jActif.num));
     }
 
     public void bouton_fl_gauche() {
+        if (!InGame) return;
+
         if (this.asseche){
             this.jActif.asseche(this.jActif.caseLeft());
             this.asseche = false;
@@ -257,6 +270,8 @@ public class Jeu extends Observable {
     }
 
     public void bouton_fl_droite() {
+        if (!InGame) return;
+
         if (this.asseche) {
             this.jActif.asseche(this.jActif.caseRight());
             this.asseche = false;
@@ -265,6 +280,8 @@ public class Jeu extends Observable {
     }
 
     public void bouton_fl_bas() {
+        if (!InGame) return;
+
         if (this.asseche) {
             this.jActif.asseche(this.jActif.caseDown());
             this.asseche = false;
@@ -273,6 +290,8 @@ public class Jeu extends Observable {
     }
 
     public void bouton_fl_haut() {
+        if (!InGame) return;
+
         if (this.asseche) {
             this.jActif.asseche(this.jActif.caseUp());
             this.asseche = false;
@@ -281,10 +300,13 @@ public class Jeu extends Observable {
     }
 
     public void bouton_asseche() {
+        if (!InGame) return;
+
         if (this.asseche) {
             this.jActif.asseche();
             this.asseche = false;
         }
-        this.asseche = true;
+        else
+            this.asseche = true;
     }
 }

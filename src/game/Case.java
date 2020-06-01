@@ -5,6 +5,11 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
+import Vue.VueJeu;
+import sun.font.FontDesignMetrics;
+
+import java.awt.Rectangle;
+
 /**
  * class Case :
  * 
@@ -18,10 +23,10 @@ public class Case {
     private final int y; // pos y (ligne sur la representation graphique)
     private Etat e; // Etat de la case
     private Artefact art; // Artefact present sur la case (== null si il n'y en a pas)
-    private Cle cle; // Cle presente sur la case (== null si il n'y en a pas)
-    // private final Jeu jeu; // Jeu associe a la case
     private ArrayList<Joueur> joueurs; // joueur(s) present sur la case
 
+
+    protected Rectangle rect; //utilise pour dessiner joliment les string dans les cases
 
     /********** CONSTRUCTEUR **********/
 
@@ -38,8 +43,7 @@ public class Case {
         this.x = x;
         this.y = y;
         this.art = art;
-        this.cle = cle;
-        // this.jeu = jeu;
+        this.rect = new Rectangle(VueJeu.TAILLE * y, VueJeu.TAILLE * x, VueJeu.TAILLE, VueJeu.TAILLE);
 
         // parametre par default a la creation :
         this.e = Etat.NORMALE; // etat NORMALE
@@ -124,21 +128,21 @@ public class Case {
         return this.art;
     }
 
-    /**
-     * 
-     * @return : true si la case possede une clef
-     */
-    public boolean asCle() {
-        return this.cle != null;
-    }
+    // /**
+    //  * 
+    //  * @return : true si la case possede une clef
+    //  */
+    // public boolean asCle() {
+    //     return this.cle != null;
+    // }
 
-    /**
-     * 
-     * @return : renvoie la cle presente sur la case
-     */
-    public Cle getCle() {
-        return this.cle;
-    }
+    // /**
+    //  * 
+    //  * @return : renvoie la cle presente sur la case
+    //  */
+    // public Cle getCle() {
+    //     return this.cle;
+    // }
 
     @Override
     /**
@@ -251,16 +255,16 @@ public class Case {
         return a;
     }
 
-    /**
-     * retire et renvoie la clef present sur la case (peut renvoyer null)
-     * 
-     * @return : la clef presente sur la case
-     */
-    public Cle takeCle() {
-        Cle c = this.cle;
-        this.cle = null;
-        return c;
-    }
+    // /**
+    //  * retire et renvoie la clef present sur la case (peut renvoyer null)
+    //  * 
+    //  * @return : la clef presente sur la case
+    //  */
+    // public Cle takeCle() {
+    //     Cle c = this.cle;
+    //     this.cle = null;
+    //     return c;
+    // }
 
     /**
      * 
@@ -291,26 +295,33 @@ public class Case {
      */
     public void paint(Graphics g, int TAILLE) {
 
-        int size_x = this.getY() * TAILLE;  //utilise pour dessiner
-        int size_y = this.getX() * TAILLE;  
+        int size_x = this.getY() * TAILLE; // utilise pour dessiner
+        int size_y = this.getX() * TAILLE;
 
 
         /** Sélection d'une couleur. */
         g.setColor(this.getColor());
         g.fillRect(size_x, size_y, TAILLE - 1, TAILLE - 1); //dessine la case avec la couleur souhaite
+        
+        this.paintJoueur(g, TAILLE, Color.BLACK);
 
+    }
+
+    protected void paintJoueur(Graphics g, int TAILLE, Color c){
         //si il y a des joueurs fait dessine grossierement un string
         if (this.asPlayer()) {
+            int size_x = this.getY() * TAILLE; // utilise pour dessiner
+            int size_y = this.getX() * TAILLE;
+
             String str = "";
             for (Joueur j : this.joueurs) {
                 str = str + " " + (String.format("J%1d", j.num));
             }
-            int size = 25 / this.joueurs.size();
+            int size = TAILLE *7/10 / this.joueurs.size();
             Font fonte = new Font(" TimesRoman ", Font.BOLD, size);
-            g.setColor(Color.cyan);
+            g.setColor(c);
             g.setFont(fonte);
-            g.drawString(str, size_x + 10, size_y + 30);
+            Utile.drawCenteredString(g, str, this.rect, fonte);
         }
-
     }
 }

@@ -13,7 +13,7 @@ public class VueJeu extends JPanel implements Observer {
     /** On maintient une référence vers le modèle. */
     private Jeu jeu;
     /** Définition d'une taille (en pixels) pour l'affichage des cellules. */
-    private final static int TAILLE = 50;
+    public final static int TAILLE = 50;
 
     /** Constructeur. */
     public VueJeu(Jeu jeu) {

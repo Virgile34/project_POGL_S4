@@ -4,6 +4,7 @@ package game;
 import java.util.ArrayList;
 
 import Exception.HorsLimite;
+import Vue.Environment;
 
 public class Joueur {
     private Jeu jeu;                        //le joueur est associe a un jeu
@@ -13,6 +14,7 @@ public class Joueur {
     public int num;                         //le numero du joueur (le 1er cree est le 1)
     private static int nb = 0;              //nombre de joueur cree
     private int actionPerformed;            //nombre d'action restante effectue depuis le debut du tour
+
 
 
     /**
@@ -37,6 +39,8 @@ public class Joueur {
         this.artefacts = new ArrayList<Artefact>();
         this.actionPerformed = 0;
     }
+
+
 
     /**
      * Constructeur :
@@ -204,24 +208,38 @@ public class Joueur {
     /**
      * cherche une cle a la position du joueur
      */
-    public void chercheCle(){
-        if (this.position.asCle() && this.asAction()) {
-            float rd = this.jeu.rd.nextFloat();
-            if (rd > this.jeu.level) {
-                this.cles.add(this.position.takeCle());
-            }
-            this.actionPerformed++;
+    private void chercheCle(){
+        float rd = this.jeu.rd.nextFloat();
+        if (rd > this.jeu.level) {
+            Cle c = Cle.makeFromInt(this.jeu.rd.nextInt(4));
+            this.cles.add(c);
+            System.out.println(String.format("J%d a trouve la cle %s", this.num, c.toString()));
         }
     }
 
+    private static Artefact last(ArrayList<Artefact> array) {
+        return array.get(array.size() - 1);
+    }
 
-    public void finDuTour(){
+    private void takeArtefact(){
+        if (this.position.asArtefact() && 
+            this.cles.contains(this.position.getArtefact().toCle())) {
+                this.artefacts.add(this.position.takeArtefact());
+                System.out.println(String.format("J%d a recupere l'artefact : %s", this.num, last(this.artefacts).toString()));
+            }
+    }
+
+
+    public boolean finDuTour(){
+        this.chercheCle();
+        this.takeArtefact();
         for (int i = 0; i < 3; i++) {
-            if (this.jeu.finDeJeu())
-                break;
             this.jeu.inondeRdm();
+            if (this.jeu.testFinDeJeu())
+                return true;
         }
         this.jeu.notifyObservers();
         this.actionPerformed = 0;
+        return false;
     }
 }

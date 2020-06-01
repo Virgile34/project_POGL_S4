@@ -12,6 +12,7 @@ public class Environment {
      */
     private JFrame frame;
     private JFrame beginFrame;
+    private JFrame endFrame;
 
     /**
      * VueGrille et VueCommandes sont deux classes définies plus loin, pour
@@ -23,14 +24,30 @@ public class Environment {
     public int m;
     public int n;
     public int nbPlayers;
-    public int lvl;
+    public float lvl;
 
     /** Construction d'une vue attachée à un modèle. */
     public Environment(){
         this.init_beginFrame();
     }
 
+    public Environment(Jeu jeu){
+        this.init_Frame(jeu);
+    }
+
+    private void reset(){
+        try {
+            this.beginFrame.setVisible(false);
+            this.frame.setVisible(false);
+            this.endFrame.setVisible(false);
+        } catch (NullPointerException e) {}
+    }
+    
     private void init_Frame(Jeu ile) {
+        this.reset();
+
+        ile.setEnvironment(this);
+
         this.frame = new JFrame("Jeu de l'Île Interdite");
         frame.setBackground(Color.BLACK);
         /**
@@ -80,6 +97,8 @@ public class Environment {
     }
 
     public void init_beginFrame (){
+        this.reset();
+
         /**
          * Environement du debut. Lorsque tout les paramètres sont entré, on lance le jeu!
          */
@@ -161,11 +180,18 @@ public class Environment {
             }
         });
         combo_joueurs.addActionListener(e -> { nbPlayers=combo_joueurs.getSelectedIndex(); });
-        combo_level.addActionListener(e -> { lvl=combo_level.getSelectedIndex();});
+        combo_level.addActionListener(e -> { 
+            int index = combo_level.getSelectedIndex();
+            switch (index){
+                case 1: this.lvl = 0.1f;
+                case 2: this.lvl = 0.3f;
+                case 3: this.lvl = 0.6f;
+                default:
+            }
+        });
 
         Valide.addActionListener(e -> {
             if(m!=0 && n!=0 && nbPlayers!=0 && lvl!=0){
-                beginFrame.setVisible(false);
                 Jeu jeu = new Jeu(m, n, nbPlayers, lvl);
                 System.out.println(jeu.toString());
                 this.init_Frame(jeu);
@@ -183,4 +209,67 @@ public class Environment {
 
     }
 
+    public void set_endFrame(){
+        /**
+         * Environement du debut. Lorsque tout les paramètres sont entré, on lance le jeu!
+         */
+        this.reset();
+        this.frame.setVisible(true);
+        // try {
+        //     this.beginFrame.setVisible(false);
+        //     // this.frame.setVisible(false);
+        //     this.endFrame.setVisible(false);
+        // } catch (NullPointerException e) {}
+
+        this.endFrame = new JFrame("Jeu de l'Île Interdite");
+        this.endFrame.setBackground(Color.BLACK);
+        this.endFrame.setLayout(new FlowLayout());
+        this.endFrame.setSize(600, 200);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(2,3));
+
+
+        JLabel label_perdu = new JLabel("Perdu");
+
+        JButton boutonRetry = new JButton("Reessayer");
+        JButton boutonReset = new JButton("Nouvelle partie");
+        JButton boutonQuit = new JButton("Quitter");
+
+        boutonRetry.addActionListener(e -> {
+            this.init_Frame(new Jeu(m, n, nbPlayers, lvl));
+        });
+        boutonReset.addActionListener(e -> {
+            this.init_beginFrame();
+        });
+        boutonQuit.addActionListener(e -> {
+            System.exit(0);
+        });
+
+        panel.add(new empty());
+        panel.add(label_perdu);
+        panel.add(new empty());
+        panel.add(boutonRetry);
+        panel.add(boutonReset);
+        panel.add(boutonQuit);
+
+
+
+
+        this.endFrame.getContentPane().add(panel);
+        this.endFrame.setLocation(this.frame.getLocation().x, this.frame.getLocation().y + this.frame.getSize().height);
+        // this.endFrame.setLocationRelativeTo(this.frame);
+        this.endFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.endFrame.setVisible(true);
+
+
+    }
+
+    class empty extends Component {
+        @Override
+        public void paint(Graphics g) {
+        }
+    }
+
 }
+
