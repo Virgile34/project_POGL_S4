@@ -1,5 +1,6 @@
 package game;
 
+import java.awt.Graphics;
 
 import Vue.Environment;
 import Vue.Observable;
@@ -89,6 +90,20 @@ public class Jeu extends Observable {
 
     public boolean InGame(){
         return this.InGame;
+    }
+
+    /**
+     * ATTENTION c'est pas la position dans l'array des joueurs mais bien le num du joueur actif
+     */
+    public int getNumJoueur(){
+        return this.jActif.num;
+    }
+
+    /**
+     * r
+     */
+    public int getActionLeft() {
+        return this.jActif.actionLeft();
     }
 
     /**
@@ -327,4 +342,20 @@ public class Jeu extends Observable {
         }
         return false;
     }
+
+
+    public void paint(Graphics g, int TAILLE){
+        for (int i = 0; i < this.getLine(); i++) {
+            for (int j = 0; j < this.getCol(); j++) {
+                this.plateau[i][j].paint(g, TAILLE);
+
+            }
+        }
+
+        if (this.asseche) {
+            this.jActif.drawAsseche(g, TAILLE);
+        }
+    }
+
+
 }

@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
+import Exception.HorsLimite;
 import Vue.VueJeu;
 import java.awt.FontMetrics;
 
@@ -286,6 +287,29 @@ public class Case {
 
 
 
+    public void drawRect(Graphics g, int TAILLE){
+        // if (this == null) return;
+        int Xactu = this.getY() * TAILLE + TAILLE / 2;
+        int Yactu = this.getX() * TAILLE + TAILLE / 2;
+
+        g.setColor(Color.RED);
+        g.drawRect(Xactu, Yactu, TAILLE / 6, TAILLE / 6);
+    }
+    
+    public void drawRond(Graphics g, int TAILLE) {
+        // if (this == null) return;
+        int Xactu = this.getY() * TAILLE + TAILLE / 2;
+        int Yactu = this.getX() * TAILLE + TAILLE / 2;
+
+        g.setColor(Color.RED);
+        g.drawOval(Xactu, Yactu, TAILLE / 4, TAILLE / 4);
+    }
+
+
+    
+
+
+
 
 
     /**
@@ -307,6 +331,7 @@ public class Case {
 
     }
 
+
     protected void paintJoueur(Graphics g, int TAILLE, Color c){
         //si il y a des joueurs fait dessine grossierement un string
         if (this.asPlayer()) {
@@ -324,4 +349,6 @@ public class Case {
             Utile.drawCenteredString(g, str, this.rect, fonte);
         }
     }
+
+
 }

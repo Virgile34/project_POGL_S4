@@ -1,13 +1,14 @@
 package Vue;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+
+import javax.swing.JPanel;
+
 import game.Jeu;
 
-
-import javax.swing.*;
-
-import Exception.HorsLimite;
-
-import java.awt.*;
 
 public class VueJeu extends JPanel implements Observer {
     /** On maintient une référence vers le modèle. */
@@ -25,8 +26,8 @@ public class VueJeu extends JPanel implements Observer {
          * l'interface, calculée en fonction du nombre de cellules et de la
          * taille d'affichage.
          */
-        Dimension dim = new Dimension(TAILLE* jeu.getLine(),
-                TAILLE* jeu.getCol());
+        Dimension dim = new Dimension(TAILLE * jeu.getLine() + 150, TAILLE * jeu.getCol() + 200);
+
         this.setPreferredSize(dim);
     }
 
@@ -51,17 +52,30 @@ public class VueJeu extends JPanel implements Observer {
      * comme la couleur actuelle.
      */
     public void paintComponent(Graphics g) {
+        g.setColor(this.getBackground());
+        g.fillRect(0, 0, TAILLE * jeu.getLine() + 150, TAILLE * jeu.getCol() + 200);
         super.repaint();
+        this.jeu.paint(g, TAILLE);
+
+
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
+        String s = "C'est au joueur " + jeu.getNumJoueur() + " de jouer";
+        g.drawString(s, 10, jeu.getLine() * TAILLE + 100);
+
+        int resteAction = 3 - jeu.getActionLeft();
+        String s1 = "Il vous reste " + resteAction + " actions à réaliser avant la fin du tour";
+        g.drawString(s1, 10, jeu.getLine() * TAILLE + 140);
         /** Pour chaque cellule... */
-        for(int i=0; i< jeu.getLine(); i++) {
-            for(int j=0; j< jeu.getCol(); j++) {
-                try {                    
-                    this.jeu.getCase(i, j).paint(g, TAILLE);
-                } catch (HorsLimite e) {
-                    System.out.println("impossible error in VueJeu.paintComponent");
-                }
-            }
-        }
+        // for(int i=0; i< jeu.getLine(); i++) {
+        //     for(int j=0; j< jeu.getCol(); j++) {
+        //         try {                    
+        //             this.jeu.getCase(i, j).paint(g, TAILLE);
+        //         } catch (HorsLimite e) {
+        //             System.out.println("impossible error in VueJeu.paintComponent");
+        //         }
+        //     }
+        // }
     }
 }
 

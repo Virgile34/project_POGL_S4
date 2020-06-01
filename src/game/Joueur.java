@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import Exception.HorsLimite;
 import Vue.Environment;
+import java.awt.Graphics;
 
 public class Joueur {
     private Jeu jeu;                        //le joueur est associe a un jeu
@@ -120,6 +121,9 @@ public class Joueur {
         return 3 - this.actionPerformed > 0;
     }
 
+    public int actionLeft() {
+        return 3 - this.actionPerformed;
+    }
 
 
     /**
@@ -198,7 +202,7 @@ public class Joueur {
      */
     public void asseche(Case c){
         if (this.asAction()) {
-            if (c.asseche()){
+            if (c != null && c.asseche()){
                 this.actionPerformed++;
                 System.out.println(String.format("J%d : action av FDT = %1d ", this.num, 3-this.actionPerformed));
             }
@@ -241,5 +245,22 @@ public class Joueur {
         this.jeu.notifyObservers();
         this.actionPerformed = 0;
         return false;
+    }
+
+
+    public void drawAsseche(Graphics g, int TAILLE) {
+        this.getPos().drawRect(g, TAILLE);
+        for (Case c : this.adjacents()){
+            c.drawRond(g, TAILLE);
+        }
+    }
+
+    public ArrayList<Case> adjacents() {
+        ArrayList<Case> a = new ArrayList<>();
+        if (this.caseDown() != null) a.add(this.caseDown());
+        if (this.caseUp() != null) a.add(this.caseUp());
+        if (this.caseRight() != null) a.add(this.caseRight());
+        if (this.caseLeft() != null) a.add(this.caseLeft());
+        return a;
     }
 }
