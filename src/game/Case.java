@@ -6,7 +6,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import Vue.VueJeu;
-import sun.font.FontDesignMetrics;
+import java.awt.FontMetrics;
 
 import java.awt.Rectangle;
 
