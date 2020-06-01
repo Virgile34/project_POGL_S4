@@ -14,7 +14,7 @@ public class Heliport extends Case {
 	}
 
 	public Color getColor() {
-		return this.getEtat().makeColor(Color.BLACK);
+		return Color.BLACK;
 		// return null;
 	}
 
@@ -42,7 +42,7 @@ public class Heliport extends Case {
 
 		Font font = new Font(" TimesRoman ", Font.BOLD, TAILLE);
 		g.setFont(font);
-		g.setColor(Color.white);
+		g.setColor(this.getEtat().makeColor(Color.white));
 		Utile.drawCenteredString(g, "H", this.rect, font);
 
 		this.paintJoueur(g, TAILLE, Color.BLUE);

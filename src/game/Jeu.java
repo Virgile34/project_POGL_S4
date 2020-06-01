@@ -200,11 +200,13 @@ public class Jeu extends Observable {
     /**
      * inonde une case aleatoire non submerge
      */
-    public void inondeRdm() {
+    public Case inondeRdm(ArrayList<Case> inondeCeTour) {
         int r1 = rd.nextInt(nbLine);
         int r2 = rd.nextInt(nbCol);
-        if (this.plateau[r1][r2].isSubmerger()) inondeRdm();
+        if (this.plateau[r1][r2].isSubmerger()) inondeRdm(inondeCeTour);
+        for (Case c : inondeCeTour) if (this.plateau[r1][r2].equals(c)) inondeRdm(inondeCeTour);
         if (this.plateau[r1][r2].inonde()) this.tueCase();
+        return this.plateau[r1][r2];
     }
 
 

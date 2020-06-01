@@ -238,8 +238,9 @@ public class Joueur {
 
 
     public boolean finDuTour(){
+        ArrayList<Case> inonderCeTour = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            this.jeu.inondeRdm();
+            inonderCeTour.add(this.jeu.inondeRdm(inonderCeTour));
             if (this.jeu.testFinDeJeu())
                 return true;
         }
