@@ -22,13 +22,14 @@ public class Jeu extends Observable {
     private final Case[][] plateau;                         //notre plateau de jeu, les cases
     private final int nbLine;                               //nombre de lignes
     private final int nbCol;                                //nombres de colones
-    private ArrayList<Case> artefacts = new ArrayList<>();  //les case contenant les artefacts (pas sur que soit vraiment utile)
+    
     private ArrayList<Joueur> players = new ArrayList<>();  //les joueurs de la partie
     private int nbCaseRest;                                 //le nombre de case non submerge (pour pouvoir arrete le jeu dans un premier temps)
     public final float level;                               //entre 0 et 1, (1-probabilite) de trouver une cle sur la case (level = 1 => probailite = 0)
     private Joueur jActif; // a qui c'est le tour
     private int pos_jActif = 0;
-    private boolean InGame;
+    private boolean InGame = true;;
+    private int nbArtefactToPickUp = 4;;
 
     /**
      * Constructeur :
@@ -45,17 +46,16 @@ public class Jeu extends Observable {
         this.nbCol = nbCol;
         this.plateau = new Case[nbLine][nbCol];
         this.nbCaseRest = nbLine*nbCol;
-        this.InGame = true;
 
-        this.initArtefact();    //init le artefacts
+        ArrayList<Case> artefacts = this.initArtefact();    //init les artefacts
         //init les cases du plateau
         for (int i = 0; i < this.nbLine; i++) {
             for (int j = 0; j < this.nbCol; j++) {
                 Case c = new Case(this, i,j);
-                for (Case art : this.artefacts) {
+                for (Case art : artefacts) {
                     if (c.equals(art)){
                         c = art;
-                        this.artefacts.remove(c);
+                        artefacts.remove(c);
                         break;
                     }
                 }
@@ -195,9 +195,9 @@ public class Jeu extends Observable {
 
 
     /**
-     * initialise les artefacts dans l'attributs art
+     * initialise les cases contenant les artefacts et en renvoie le tableau
      */
-    private void initArtefact() {
+    private ArrayList<Case> initArtefact() {
         ArrayList<Integer> intArts = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             int art = this.rd.nextInt(5 - i);
@@ -208,7 +208,7 @@ public class Jeu extends Observable {
             intArts.add(art);
         }
 
-        this.artefacts = new ArrayList<>();
+        ArrayList<Case> artefacts = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             boolean find = false;
             Case c = null;
@@ -222,7 +222,7 @@ public class Jeu extends Observable {
                     c = new Heliport(this, r1, r2);
 
                 boolean temp = true;
-                for (Case art : this.artefacts) {
+                for (Case art : artefacts) {
                     if (c.equals(art)) {
                         temp = false;
                         break;
@@ -231,8 +231,9 @@ public class Jeu extends Observable {
 
                 find = temp;
             }
-            this.artefacts.add(c);
+            artefacts.add(c);
         }
+        return artefacts;
     }
 
 
@@ -248,6 +249,13 @@ public class Jeu extends Observable {
      */
     public void boutonFDT() {
         if (!InGame) return;
+
+        this.jActif.chercheCle();
+
+        if (this.jActif.takeArtefact()) {
+            this.nbArtefactToPickUp--;
+        }
+
 
         if (this.jActif.finDuTour()) {
             this.InGame = false;
@@ -308,5 +316,15 @@ public class Jeu extends Observable {
         }
         else
             this.asseche = true;
+    }
+
+    public boolean testWin(){
+        if (this.nbArtefactToPickUp == 0) {
+            for(Joueur j : this.getJoueurs()) {
+                if(!j.getPos().isHeli()) return false;
+            }
+            return true;
+        }
+        return false;
     }
 }

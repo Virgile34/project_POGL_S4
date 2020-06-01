@@ -3,6 +3,7 @@ package game;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.awt.FontMetrics;
 
 public class Utile {
@@ -18,5 +19,9 @@ public class Utile {
 		g.setFont(font);
 		// Draw the String
 		g.drawString(text, x, y);
+	}
+
+	public static Artefact last(ArrayList<Artefact> array) {
+		return array.get(array.size() - 1);
 	}
 }

@@ -208,31 +208,31 @@ public class Joueur {
     /**
      * cherche une cle a la position du joueur
      */
-    private void chercheCle(){
+    public boolean chercheCle(){
         float rd = this.jeu.rd.nextFloat();
         if (rd > this.jeu.level) {
             Cle c = Cle.makeFromInt(this.jeu.rd.nextInt(4));
             this.cles.add(c);
             System.out.println(String.format("J%d a trouve la cle %s", this.num, c.toString()));
+            return true;
         }
+        return false;
     }
 
-    private static Artefact last(ArrayList<Artefact> array) {
-        return array.get(array.size() - 1);
-    }
 
-    private void takeArtefact(){
+
+    public boolean takeArtefact(){
         if (this.position.asArtefact() && 
             this.cles.contains(this.position.getArtefact().toCle())) {
                 this.artefacts.add(this.position.takeArtefact());
-                System.out.println(String.format("J%d a recupere l'artefact : %s", this.num, last(this.artefacts).toString()));
-            }
+                System.out.println(String.format("J%d a recupere l'artefact : %s", this.num, Utile.last(this.artefacts).toString()));
+                return true;
+        }
+        return false;
     }
 
 
     public boolean finDuTour(){
-        this.chercheCle();
-        this.takeArtefact();
         for (int i = 0; i < 3; i++) {
             this.jeu.inondeRdm();
             if (this.jeu.testFinDeJeu())
