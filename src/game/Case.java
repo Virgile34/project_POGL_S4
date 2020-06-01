@@ -222,8 +222,7 @@ public class Case {
      * 
      * change l'etat de la case si possible (pour l'inonder) 
      * 
-     * Attention : cette fonction modifier le nombre de case restante dans 
-     * le jeu si on passe d'une case INONDE a SUBMERGER (on ne pourra desormais plus y aller)
+     * @return : true si la case en question est noye(Inonde a submerge)
      */
     public boolean inonde() {
         if (this.e == Etat.NORMALE)

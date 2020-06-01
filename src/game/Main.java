@@ -2,6 +2,7 @@ package game;
 
 import Vue.Environment;
 
+import java.awt.EventQueue;
 
 public class Main {
     /**
@@ -16,10 +17,11 @@ public class Main {
          * Pour les besoins du jour on considère la ligne EvenQueue... comme une
          * incantation qu'on pourra expliquer plus tard.
          */
-        Jeu jeu = new Jeu(4, 4, 4, 0f);
-        Environment env = new Environment(jeu);
-        // EventQueue.invokeLater(() -> {
-        //     // Voici le contenu qui nous intéresse.
-        // });
+        // Jeu jeu = new Jeu(4, 4, 1, 0f);
+        // Environment env = new Environment(jeu);
+        EventQueue.invokeLater(() -> {
+            // Voici le contenu qui nous intéresse.
+            Environment env = new Environment();
+        });
     }
 }

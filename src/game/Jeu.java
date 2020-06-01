@@ -170,10 +170,25 @@ public class Jeu extends Observable {
     public Case inondeRdm(ArrayList<Case> inondeCeTour) {
         int r1 = rd.nextInt(nbLine);
         int r2 = rd.nextInt(nbCol);
-        if (this.plateau[r1][r2].isSubmerger()) inondeRdm(inondeCeTour);
-        for (Case c : inondeCeTour) if (this.plateau[r1][r2].equals(c)) inondeRdm(inondeCeTour);
+        if (this.plateau[r1][r2].isSubmerger()) return inondeRdm(inondeCeTour);
+        for (Case c : inondeCeTour) {
+            if (this.plateau[r1][r2].equals(c)) 
+                return inondeRdm(inondeCeTour);
+        }
         if (this.plateau[r1][r2].inonde()) this.tueCase();
         return this.plateau[r1][r2];
+    }
+
+    private void finTour() {
+        ArrayList<Case> inonderCeTour = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            Case c = this.inondeRdm(inonderCeTour);
+            inonderCeTour.add(c);
+
+        }
+        this.notifyObservers();
+        this.jActif.resetActionPerfo();
+        // return false;
     }
 
 
@@ -290,6 +305,7 @@ public class Jeu extends Observable {
         if (this.testWin()) {
             this.InGame = false;
             this.env.set_endFrame("Gagne !");
+            return;
         }
         
         this.jActif.chercheCle();
@@ -305,12 +321,12 @@ public class Jeu extends Observable {
         if (s != null) {
             this.InGame = false;
             this.env.set_endFrame(s);
+            return;
         }
 
         this.pos_jActif = (this.pos_jActif + 1) % this.getJoueurs().size();
         this.jActif = this.getJoueur(this.pos_jActif);
         this.asseche = false;
-        System.out.println("fin du tour, c'est a " + (this.jActif.num));
     }
 
     /**
@@ -368,17 +384,7 @@ public class Jeu extends Observable {
         return false;
     }
 
-    private void finTour() {
-        ArrayList<Case> inonderCeTour = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            inonderCeTour.add(this.inondeRdm(inonderCeTour));
-            // if (this.jeu.testPerdu())
-            // return true;
-        }
-        this.notifyObservers();
-        this.jActif.resetActionPerfo();
-        // return false;
-    }
+
 
     public void bouton_fl_gauche() {
         if (!InGame) return;

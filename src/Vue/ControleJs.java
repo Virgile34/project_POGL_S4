@@ -5,6 +5,7 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import java.awt.GridLayout;
 
 import game.Jeu;
 
@@ -23,8 +24,9 @@ public class ControleJs extends JPanel {
 	 * @param j : le jeu 
 	 */
 	public ControleJs(Jeu j) {
+		super();
+		this.setLayout(new GridLayout(2, 3));
 		this.j=j;
-
 		/**
 		 * Bouton gauche
 		 */
@@ -68,11 +70,11 @@ public class ControleJs extends JPanel {
 		// JButton boutonAsseche = new JButton("asseche");
 	
 		this.add(boutonFDT);
+		this.add(boutonHaut);
+		this.add(boutonAsseche);
+		this.add(boutonGauche);
 		this.add(boutonBas);
 		this.add(boutonDroite);
-		this.add(boutonGauche);
-		this.add(boutonHaut);	
-		this.add(boutonAsseche);
 
 		boutonFDT.addActionListener(e -> { this.j.boutonFDT(); });
         boutonBas.addActionListener(e -> { this.j.bouton_fl_bas(); });
