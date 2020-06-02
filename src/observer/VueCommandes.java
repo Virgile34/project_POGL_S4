@@ -254,7 +254,7 @@ public class VueCommandes extends JPanel implements Observer {
 
 			JButton add = new JButton(this.jeu.getJoueur(i).toString());
 			add.addActionListener(e -> { 
-				j.getCle(this.jeu.getControleur().toGive());
+				j.getCle(this.jeu.getControleur().takeCle());
 				this.jeu.getControleur().resetToGive();
 				this.jeu.getControleur().exitMode();
 				this.jeu.notifyObservers();

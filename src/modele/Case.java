@@ -47,9 +47,9 @@ public class Case {
     }
 
 
-    ArrayList<Joueur> getJoueurs() {
-        return (ArrayList<Joueur>) this.joueurs.clone();
-    }
+    // ArrayList<Joueur> getJoueurs() {
+    //     return (ArrayList<Joueur>) this.joueurs.clone();
+    // }
 
     /**
      * Constructeur :

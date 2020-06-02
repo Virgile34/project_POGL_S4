@@ -70,8 +70,14 @@ public class Controleur {
 	}
 
 	public ArrayList<Joueur> joueursMemePos(){
-		ArrayList<Joueur> j = this.jActif.getPos().getJoueurs();
+		ArrayList<Joueur> j = this.jeu.getJoueurs();
 		j.remove(this.jActif);
+		for (int i = 0; i < j.size(); i++) {
+			if (!j.get(i).getPos().equals(jActif.getPos())) {
+				j.remove(i);
+				i--;
+			}
+		}
 		return j;
 	}
 
@@ -301,7 +307,7 @@ public class Controleur {
 	public void selectAir() {
 		if (!InGame) return;
 
-		if (this.isEchange() && this.jActif.donneCle(Cle.Air)){ 
+		if (this.isEchange() && this.jActif.asCle(Cle.Air)){ 
 			this.toGive = Cle.Air;
 			this.setMode(Mode.ValidEchange);
 			this.jeu.notifyObservers();
@@ -311,17 +317,19 @@ public class Controleur {
 	public void selectEau() {
 		if (!InGame) return;
 
-		if (this.isEchange() && this.jActif.donneCle(Cle.Eau)){ 
-			this.toGive = Cle.Eau;
-			this.setMode(Mode.ValidEchange);
-			this.jeu.notifyObservers();
+		if (this.isEchange() ){ 
+			if(this.jActif.asCle(Cle.Eau)){
+				this.toGive = Cle.Eau;
+				this.setMode(Mode.ValidEchange);
+				this.jeu.notifyObservers();
+			}
 		}
 	}
 
 	public void selectFeu() {
 		if (!InGame) return;
 
-		if (this.isEchange() && this.jActif.donneCle(Cle.Feu)){ 
+		if (this.isEchange() && this.jActif.asCle(Cle.Feu)){ 
 			this.toGive = Cle.Feu;
 			this.setMode(Mode.ValidEchange);
 			this.jeu.notifyObservers();
@@ -331,7 +339,7 @@ public class Controleur {
 	public void selectTerre() {
 		if (!InGame) return;
 
-		if (this.isEchange() && this.jActif.donneCle(Cle.Terre)){ 
+		if (this.isEchange() && this.jActif.asCle(Cle.Terre)){ 
 			this.toGive = Cle.Terre;
 			this.setMode(Mode.ValidEchange);
 			this.jeu.notifyObservers();
@@ -406,5 +414,9 @@ public class Controleur {
 		Asseche,
 		Echange,
 		ValidEchange;
+	}
+
+	public Cle takeCle(){
+		return this.jActif.takeCle(this.toGive);
 	}
 }

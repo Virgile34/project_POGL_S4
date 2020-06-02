@@ -24,6 +24,7 @@ public class Environment implements Observer {
     private JFrame beginFrame;
     private JFrame endFrame;
 
+    private JPanel commandes_info;
     /**
      * VueGrille et VueCommandes sont deux classes définies plus loin, pour
      * nos deux parties de l'interface graphique.
@@ -97,11 +98,11 @@ public class Environment implements Observer {
         this.commandes = new VueCommandes(this.jeu);
         this.info = new VueInformation(this.jeu);
 
-        JPanel temp = new JPanel(new GridLayout(2, 1));
-        temp.add(this.info);
-        temp.add(this.commandes);
+        this.commandes_info = new JPanel(new GridLayout(2, 1));
+        commandes_info.add(this.info);
+        commandes_info.add(this.commandes);
 
-        frame.add(temp);
+        frame.add(commandes_info);
         /**
          * Remarque : on peut passer à la méthode [add] des paramètres
          * supplémentaires indiquant où placer l'élément. Par exemple, si on

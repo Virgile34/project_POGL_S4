@@ -311,7 +311,7 @@ public class Joueur {
 	public boolean asCle(Cle c) {
         for(Cle key : this.cles){ 
             if (c.equals(key)) {
-                // this.cles.remove(key);
+                this.cles.remove(key);
                 return true;
             }
         }
