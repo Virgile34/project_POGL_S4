@@ -40,7 +40,8 @@ public class VueCommandes extends JPanel implements Observer {
 	ImageIcon icon_gauche;
 	final static Dimension dim = new Dimension(200, 100);
 
-	JPanel deplassement, echange, validationEch;
+	Vue deplassement, echange, validationEch;
+	
 	// JPanel actif;
 	
 	public VueCommandes(Modele j){
@@ -81,15 +82,21 @@ public class VueCommandes extends JPanel implements Observer {
 
 	}
 
+	private void makeFrom(Vue v){
+		this.removeAll();
+		this.add(v);
+		this.repaint();
+	}
+
 	@Override
 	public void update() {
 		if (this.jeu.getControleur().stateChanged()){
 			if (this.jeu.getControleur().isDeplace()){
-				this.removeAll();
-				this.add(this.deplassement);
+				
 				this.boutonSeche_posActu.setText("Assecher");
 				this.boutonFDT_annuler.setText("Fin Tour");
 				this.boutonEchange.setText("Switch");
+				this.makeFrom(deplassement);
 				// this.actif = this.deplassement;
 			}			
 			else if (this.jeu.getControleur().isAsseche()){
@@ -111,13 +118,11 @@ public class VueCommandes extends JPanel implements Observer {
 
 			}
 			else if (this.jeu.getControleur().isEchange()) {
-				this.removeAll();
-				this.add(this.echange);
+				this.makeFrom(echange);
 				// this.actif = this.echange;
 			}
 			else if (this.jeu.getControleur().isValidEchange()){
-				this.removeAll();
-				this.add(this.validationEch);
+				this.makeFrom(validationEch);
 				// this.actif = this.validationEch;
 			}
 			this.repaint();
@@ -165,7 +170,7 @@ public class VueCommandes extends JPanel implements Observer {
 
 
 
-		deplassement = new JPanel(new GridLayout(3,1));
+		deplassement = new Vue(new GridLayout(3,1));
 		deplassement.setSize(dim);
 
 		deplassement.add(boutonFDT_annuler);
@@ -213,7 +218,7 @@ public class VueCommandes extends JPanel implements Observer {
 
 
 
-		echange = new JPanel(new GridLayout(3, 1));
+		echange = new Vue(new GridLayout(3, 1));
 		echange.setSize(dim);
 
 		echange.add(boutonFDT_annuler);
@@ -236,7 +241,7 @@ public class VueCommandes extends JPanel implements Observer {
 		boutonFDT_annuler.addActionListener(e -> { this.jeu.getControleur().boutonFDT(); });
 
 
-		this.validationEch = new JPanel(new GridLayout(2,1));
+		this.validationEch = new Vue(new GridLayout(2,1));
 		validationEch.setSize(dim);
 		validationEch.add(boutonFDT_annuler);
 
@@ -258,4 +263,11 @@ public class VueCommandes extends JPanel implements Observer {
 		validationEch.add(temp);
 	}
 	
+}
+
+
+class Vue extends JPanel {
+	Vue(GridLayout grd){
+		super(grd);
+	}
 }
