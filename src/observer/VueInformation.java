@@ -34,6 +34,7 @@ public class VueInformation extends JPanel implements Observer {
 			infos.add(new InfoPlayer(j));
 			this.add(infos.get(infos.size()- 1));
 		}
+		// this.update();
 	}
 
 	@Override
