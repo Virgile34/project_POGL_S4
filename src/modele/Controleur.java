@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.awt.Graphics;
 
 public class Controleur {
-	private Jeu jeu;
+	private Modele jeu;
 
 	private ArrayList<Case> artefactToPickUp = new ArrayList<>();
 
@@ -18,7 +18,7 @@ public class Controleur {
 	/**
 	 * Constructeur
 	 */
-	public Controleur(Jeu j){
+	public Controleur(Modele j){
 		this.jeu = j;
 		this.jActif = this.jeu.getJoueur(0);
 		this.artefactToPickUp = this.jeu.artefacts();

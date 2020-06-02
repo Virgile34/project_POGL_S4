@@ -10,16 +10,16 @@ import java.awt.GridLayout;
 
 import java.awt.Color;
 
-import modele.Jeu;
+import modele.Modele;
 
 public class VueCommandes extends JPanel implements Observer {
 
-	private Jeu jeu;
+	private Modele jeu;
 
 	JButton boutonSeche_posActu;
 	JButton boutonFDT_annuler;
 
-	public VueCommandes(Jeu j){
+	public VueCommandes(Modele j){
 		this.jeu = j;
 		jeu.addObserver((Observer) this);
 

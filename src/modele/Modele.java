@@ -14,7 +14,7 @@ import Exception.HorsLimite;
 /**
  * notre modele (ici c'est un jeu)
  */
-public class Jeu extends Observable {
+public class Modele extends Observable {
     
     /********** ATTRIBUTS **********/
 
@@ -42,7 +42,7 @@ public class Jeu extends Observable {
      * @param nbPlayers : nombre de joueurs
      * @param level     : niveau choisiS
      */
-    public Jeu(int nbLine, int nbCol,int nbPlayers, float level) {
+    public Modele(int nbLine, int nbCol,int nbPlayers, float level) {
         super();
 
         //init les attributs

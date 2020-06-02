@@ -8,16 +8,16 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 
-import modele.Jeu;
+import modele.Modele;
 import modele.Joueur;
 
 public class VueInformation extends JPanel implements Observer {
-	private Jeu jeu;
+	private Modele jeu;
 	private ArrayList<InfoPlayer> infos = new ArrayList<>();
 	private ArrayList<String> strsInfoTour = new ArrayList<>();
 	private ArrayList<JLabel> infoTour = new ArrayList<>(); //a qui c'est de jouer, comment de mouvement il reste..
 
-	public VueInformation(Jeu jeu) {
+	public VueInformation(Modele jeu) {
 		this.jeu = jeu;
 		jeu.addObserver((Observer) this);
 

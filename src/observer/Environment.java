@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import modele.Jeu;
+import modele.Modele;
 
 public class Environment implements Observer {
     /**
@@ -36,7 +36,7 @@ public class Environment implements Observer {
     private int n;
     private int nbPlayers;
     private float lvl;
-    private Jeu jeu;
+    private Modele jeu;
 
     /** Construction d'une vue attachée à un modèle. */
     public Environment(){
@@ -44,7 +44,7 @@ public class Environment implements Observer {
     }
 
 
-    public Environment(Jeu jeu){
+    public Environment(Modele jeu){
         this.init_Frame(jeu);
         m = jeu.getLine();
         n = jeu.getCol();
@@ -62,7 +62,7 @@ public class Environment implements Observer {
     
 
 
-    private void init_Frame(Jeu ile) {
+    private void init_Frame(Modele ile) {
         this.reset();
         this.jeu = ile;
         this.jeu.addObserver((Observer) this);
@@ -70,7 +70,7 @@ public class Environment implements Observer {
 
         // ile.setEnvironment(this);
 
-        this.frame = new JFrame("Jeu de l'Île Interdite");
+        this.frame = new JFrame("Modele de l'Île Interdite");
         frame.setBackground(Color.BLACK);
         /**
          * On précise un mode pour disposer les différents éléments à
@@ -136,7 +136,7 @@ public class Environment implements Observer {
         nbPlayers=0;
         lvl=0;
 
-        beginFrame = new JFrame("Jeu de l'Île Interdite");
+        beginFrame = new JFrame("Modele de l'Île Interdite");
         beginFrame.setBackground(Color.BLACK);
         beginFrame.setLayout(new FlowLayout());
         beginFrame.setSize(600, 200);
@@ -221,7 +221,7 @@ public class Environment implements Observer {
 
         Valide.addActionListener(e -> {
             if(m!=0 && n!=0 && nbPlayers!=0 && lvl!=0){
-                Jeu jeu = new Jeu(m, n, nbPlayers, lvl);
+                Modele jeu = new Modele(m, n, nbPlayers, lvl);
                 System.out.println(jeu.toString());
                 this.init_Frame(jeu);
             }
@@ -245,7 +245,7 @@ public class Environment implements Observer {
         // if (this.beginFrame != null) this.beginFrame.setVisible(false);
 
 
-        this.endFrame = new JFrame("Jeu de l'Île Interdite");
+        this.endFrame = new JFrame("Modele de l'Île Interdite");
         this.endFrame.setBackground(Color.BLACK);
         this.endFrame.setLayout(new FlowLayout());
         this.endFrame.setSize(600, 200);
@@ -260,7 +260,7 @@ public class Environment implements Observer {
         JButton boutonQuit = new JButton("Quitter");
 
         boutonRetry.addActionListener(e -> {
-            this.init_Frame(new Jeu(m, n, nbPlayers, lvl));
+            this.init_Frame(new Modele(m, n, nbPlayers, lvl));
         });
         boutonReset.addActionListener(e -> {
             this.init_beginFrame();

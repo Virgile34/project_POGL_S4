@@ -6,15 +6,15 @@ import java.awt.Graphics;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import modele.Jeu;
+import modele.Modele;
 
 
 public class VueModele extends JPanel implements Observer {
-    private Jeu jeu;
+    private Modele jeu;
     public final static int TAILLE = 50;
 
     /** Constructeur. */
-    public VueModele(Jeu jeu) {
+    public VueModele(Modele jeu) {
         this.jeu = jeu;
         jeu.addObserver((Observer) this);
         /**

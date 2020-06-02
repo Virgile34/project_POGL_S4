@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import Exception.HorsLimite;
 
 public class Joueur {
-    public Jeu jeu;                        //le joueur est associe a un jeu
+    public Modele jeu;                        //le joueur est associe a un jeu
     private Case position;                  //la position du joueur
     private ArrayList<Cle> cles;            //les cles en possesion du joueur
     private ArrayList<Artefact> artefacts;  //les artefacts en possesion du joueur
@@ -23,7 +23,7 @@ public class Joueur {
      * @param i     : la position en x dans le plateau (lignes)
      * @param j     : la position en y dans le plateau (colones)
      */
-    public Joueur(Jeu jeu, int i, int j) {
+    public Joueur(Modele jeu, int i, int j) {
         nb++;
         this.num = nb;
         this.jeu = jeu;
@@ -47,7 +47,7 @@ public class Joueur {
      * @param jeu   : le jeu associe
      * @param pos   : la cas ou place le joueur (utilise en realite la case du plateau de coordonnes pos)
      */
-    public Joueur(Jeu jeu, Case pos) {
+    public Joueur(Modele jeu, Case pos) {
         this(jeu, pos.getX(), pos.getY());
     }
 
