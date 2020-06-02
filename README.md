@@ -13,10 +13,10 @@ L'assèchement d'une zone adjacente se fait également à l'aide des flèches af
 Lorsque vous finissez votre tour, vous allez aléatoirement recevoir ou non un clef, qui va vous permettre par la suite de récupérer un artefact.
 
 Les couleurs des zones d'artefact sont :
-vert -> terre
-rouge -> feu
-bleu -> eau
-jaune -> air
+vert -> terre //
+rouge -> feu //
+bleu -> eau //
+jaune -> air //
 et l'héliport est représenté par un H noir. 
 
 Si vous cliquez malencontreusement sur la case assécher mais que vous ne voulez plus assècher, vous pouvez cliquer sur pos actuelle. De même, si vous essayé d'assécher une zone normal (non inondé) cela n'affectera pas votre nombre d'action restante.
