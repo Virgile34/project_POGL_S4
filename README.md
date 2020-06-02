@@ -19,7 +19,7 @@ bleu -> eau //
 jaune -> air //
 et l'héliport est représenté par un H noir. 
 
-Si vous cliquez malencontreusement sur la case assécher mais que vous ne voulez plus assècher, vous pouvez cliquer sur pos actuelle. De même, si vous essayé d'assécher une zone normal (non inondé) cela n'affectera pas votre nombre d'action restante.
+Si vous cliquez malencontreusement sur la case assécher mais que vous ne voulez plus assècher, vous pouvez cliquer sur une zone normal (non inondé) cela n'affectera pas votre nombre d'action restante.
 
 Pour coder ce jeu, nous avons suivi le principe du Modele-Vue-Controleur (MVC). Le modèle gère le jeu en fond, la vue gère l'interface et le controleur gère l'interaction avec l'utilisateur.
 
