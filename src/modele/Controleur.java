@@ -306,6 +306,7 @@ public class Controleur {
 
 	public void selectAir() {
 		if (!InGame) return;
+		if(!(this.joueursMemePos().size() > 0)) return;
 
 		if (this.isEchange() && this.jActif.asCle(Cle.Air)){ 
 			this.toGive = Cle.Air;
@@ -316,6 +317,7 @@ public class Controleur {
 
 	public void selectEau() {
 		if (!InGame) return;
+		if(!(this.joueursMemePos().size() > 0)) return;
 
 		if (this.isEchange() ){ 
 			if(this.jActif.asCle(Cle.Eau)){
@@ -328,6 +330,7 @@ public class Controleur {
 
 	public void selectFeu() {
 		if (!InGame) return;
+		if(!(this.joueursMemePos().size() > 0)) return;
 
 		if (this.isEchange() && this.jActif.asCle(Cle.Feu)){ 
 			this.toGive = Cle.Feu;
@@ -338,6 +341,7 @@ public class Controleur {
 
 	public void selectTerre() {
 		if (!InGame) return;
+		if(!(this.joueursMemePos().size() > 0)) return;
 
 		if (this.isEchange() && this.jActif.asCle(Cle.Terre)){ 
 			this.toGive = Cle.Terre;

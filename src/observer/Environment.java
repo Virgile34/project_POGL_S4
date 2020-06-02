@@ -124,7 +124,13 @@ public class Environment implements Observer {
         // frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         frame.setVisible(true);
+
+        // solution pour regle le bug de si on appuye par sur switch en 1er, il ne se
+        // dessinera pas qui marche meme pas lol
+        // this.jeu.getControleur().bouton_echange();
+        // this.jeu.getControleur().boutonFDT();
     }
 
     public void init_beginFrame (){

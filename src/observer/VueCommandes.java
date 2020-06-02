@@ -238,30 +238,25 @@ public class VueCommandes extends JPanel implements Observer {
 	private void init_validEch() {
 
 
-		JButton boutonFDT_annuler = new JButton("annuler");
-		boutonFDT_annuler.addActionListener(e -> { this.jeu.getControleur().boutonFDT(); });
-
-
-		this.validationEch = new Vue(new GridLayout(2,1));
-		validationEch.setSize(dim);
-		validationEch.add(boutonFDT_annuler);
 
 		ArrayList<Joueur> possible = this.jeu.getControleur().joueursMemePos();
 
-		JPanel temp = new JPanel(new GridLayout(1, possible.size()));
+
+		this.validationEch = new Vue(new GridLayout(1, possible.size()));
+		validationEch.setSize(dim);
+
 		for (int i = 0 ; i < possible.size(); i++){
 			Joueur j = possible.get(i);
 
-			JButton add = new JButton(this.jeu.getJoueur(i).toString());
+			JButton add = new JButton(possible.get(i).toString());
 			add.addActionListener(e -> { 
-				j.getCle(this.jeu.getControleur().takeCle());
+				j.getCle(this.jeu.getControleur().toGive());
 				this.jeu.getControleur().resetToGive();
 				this.jeu.getControleur().exitMode();
 				this.jeu.notifyObservers();
 			} );
-			temp.add(add);
+			validationEch.add(add);
 		}
-		validationEch.add(temp);
 	}
 	
 }

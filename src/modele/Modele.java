@@ -186,7 +186,9 @@ public class Modele extends Observable {
      * @return : les joueurs de la parties
      */
     public ArrayList<Joueur> getJoueurs(){
-        return this.players;
+        ArrayList<Joueur> j = new ArrayList<>();
+        for (Joueur pl : players) j.add(pl);
+        return j;
     }
 
     /**
