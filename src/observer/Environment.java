@@ -1,11 +1,21 @@
-package Vue;
+package observer;
 
-import game.Jeu;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.GridLayout;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
-public class Environment {
+import modele.Jeu;
+
+public class Environment implements Observer {
     /**
      * JFrame est une classe fournie par Swing. Elle représente la fenêtre
      * de l'application graphique.
@@ -18,18 +28,21 @@ public class Environment {
      * VueGrille et VueCommandes sont deux classes définies plus loin, pour
      * nos deux parties de l'interface graphique.
      */
-    private VueJeu ileGraphique;
-    private ControleJs commandes;
+    private VueModele  ileGraphique;
+    private VueCommandes commandes;
+    private VueInformation info;
 
-    public int m;
-    public int n;
-    public int nbPlayers;
-    public float lvl;
+    private int m;
+    private int n;
+    private int nbPlayers;
+    private float lvl;
+    private Jeu jeu;
 
     /** Construction d'une vue attachée à un modèle. */
     public Environment(){
         this.init_beginFrame();
     }
+
 
     public Environment(Jeu jeu){
         this.init_Frame(jeu);
@@ -39,16 +52,23 @@ public class Environment {
         lvl = jeu.level;
     }
 
+
+
     private void reset(){
         if (this.beginFrame != null) this.beginFrame.setVisible(false);
         if (this.frame != null) this.frame.setVisible(false);
         if (this.endFrame != null) this.endFrame.setVisible(false);
     }
     
+
+
     private void init_Frame(Jeu ile) {
         this.reset();
+        this.jeu = ile;
+        this.jeu.addObserver((Observer) this);
 
-        ile.setEnvironment(this);
+
+        // ile.setEnvironment(this);
 
         this.frame = new JFrame("Jeu de l'Île Interdite");
         frame.setBackground(Color.BLACK);
@@ -67,15 +87,22 @@ public class Environment {
          *    même dimension. Cette dimension est calculée en fonction du
          *    nombre de cases à placer et de la dimension du contenant.
          */
-        frame.setLayout(new FlowLayout());
+        frame.setLayout(new GridLayout(2, 1));
 
         /**Définition des joueurs**/
 
-        /** Définition des deux vues et ajout à la fenêtre. */
-        this.ileGraphique = new VueJeu(ile);
+        /** Définition des trois vues et ajout à la fenêtre. */
+        this.ileGraphique = new VueModele(this.jeu);
         frame.add(this.ileGraphique);
-        this.commandes = new ControleJs(ile);
+
+
+        JPanel temp = new JPanel(new GridLayout(1, 2));
+        this.commandes = new VueCommandes(this.jeu);
         frame.add(this.commandes);
+        this.info = new VueInformation(this.jeu);
+        frame.add(this.info);
+
+        // frame.add(temp);
         /**
          * Remarque : on peut passer à la méthode [add] des paramètres
          * supplémentaires indiquant où placer l'élément. Par exemple, si on
@@ -213,15 +240,10 @@ public class Environment {
 
     public void set_endFrame(String s){
         /**
-         * Environement du debut. Lorsque tout les paramètres sont entré, on lance le jeu!
+         * fenetre de fin
          */
-        this.reset();
-        this.frame.setVisible(true);
-        // try {
-        //     this.beginFrame.setVisible(false);
-        //     // this.frame.setVisible(false);
-        //     this.endFrame.setVisible(false);
-        // } catch (NullPointerException e) {}
+        // if (this.beginFrame != null) this.beginFrame.setVisible(false);
+
 
         this.endFrame = new JFrame("Jeu de l'Île Interdite");
         this.endFrame.setBackground(Color.BLACK);
@@ -269,6 +291,13 @@ public class Environment {
     class empty extends Component {
         @Override
         public void paint(Graphics g) {
+        }
+    }
+
+    @Override
+    public void update() {
+        if (!this.jeu.getControleur().InGame()) { 
+            this.set_endFrame(this.jeu.endString);
         }
     }
 

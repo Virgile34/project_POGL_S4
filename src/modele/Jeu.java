@@ -1,9 +1,8 @@
-package game;
+package modele;
 
 import java.awt.Graphics;
 
-import Vue.Environment;
-import Vue.Observable;
+import observer.*;
 import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 
 import java.util.ArrayList;
@@ -27,17 +26,13 @@ public class Jeu extends Observable {
     private final int nbCol;                                //nombres de colones
     
     private ArrayList<Joueur> players = new ArrayList<>();  //les joueurs de la partie
-    private ArrayList<Case> artefactsToPickUp = new ArrayList<>();
-    // private ArrayList<Case> artefacts = new ArrayList<>();
-    /** a faire ptet
-     * retenir les cases des artefcats pour etre capable de les replacer au meme endroit si
-     *  on veut recommencer la partie avec les meme parametres
-     */
+    private ArrayList<Case> artefacts = new ArrayList<>();
+
     private Heliport H;
     public final float level;                               //entre 0 et 1, (1-probabilite) de trouver une cle sur la case (level = 1 => probailite = 0)
-    private Joueur jActif; // a qui c'est le tour
-    private int pos_jActif = 0;
-    private boolean InGame = true;;
+    private Controleur ctr;
+
+    public String endString = null;
 
     /**
      * Constructeur :
@@ -48,6 +43,8 @@ public class Jeu extends Observable {
      * @param level     : niveau choisiS
      */
     public Jeu(int nbLine, int nbCol,int nbPlayers, float level) {
+        super();
+
         //init les attributs
         this.level = level;
         this.nbLine = nbLine;
@@ -57,13 +54,18 @@ public class Jeu extends Observable {
         this.initPlateau();
         //init les joueurs (doit etre fais apres car le joueur "s'ajoute" dans la case quand il se crer)
         for (int i = 0 ; i < nbPlayers; i++) this.players.add(new Joueur(this, 0, i));
-        try {this.jActif = this.players.get(0);}
-        catch (Exception e){
-            System.out.println("erreur en creant le JEU, pas de joueurs...");
-            System.exit(1);
-        }
+
+        this.ctr = new Controleur(this);
+
     }
 
+    ArrayList<Joueur> getJoueur(Case c){
+        ArrayList<Joueur> arr = new ArrayList<>();
+        for(Joueur j : this.players){
+            if(j.getPos().equals(c)) arr.add(j);
+        }
+        return arr;
+    }
 
 
     /********** METHODE POUR OBTENIR DES INFOS SUR LE JEU **********/
@@ -80,23 +82,6 @@ public class Jeu extends Observable {
         return s;
     }
 
-    public boolean InGame(){
-        return this.InGame;
-    }
-
-    /**
-     * ATTENTION c'est pas la position dans l'array des joueurs mais bien le num du joueur actif
-     */
-    public int getNumJoueur(){
-        return this.jActif.num;
-    }
-
-    /**
-     * r
-     */
-    public int getActionLeft() {
-        return this.jActif.actionLeft();
-    }
 
     /**
      * 
@@ -162,6 +147,13 @@ public class Jeu extends Observable {
         return this.getCasedev(c.getX(), c.getY());
     }
 
+    public int getNbj(){
+        return this.players.size();
+    }
+
+    public Controleur getControleur(){
+        return this.ctr;
+    }
 
 
 
@@ -182,18 +174,6 @@ public class Jeu extends Observable {
         return this.plateau[r1][r2];
     }
 
-    private void finTour() {
-        ArrayList<Case> inonderCeTour = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            Case c = this.inondeRdm(inonderCeTour);
-            inonderCeTour.add(c);
-
-        }
-        this.notifyObservers();
-        this.jActif.resetActionPerfo();
-        // return false;
-    }
-
 
 
 
@@ -210,8 +190,16 @@ public class Jeu extends Observable {
      * @param j
      * @return : le ieme joueur dans l'array list des joueurs
      */
-    public Joueur getJoueur(int j) {
-        return this.players.get(j);
+    public Joueur getJoueur(int i) {
+        Joueur j = null;
+        try {
+            j = this.players.get(i);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println(String.format("Erreur : bad index in getJoueut(int j) (%d alors qu'il y a %d joueurs", i, this.getNbj()));
+            System.out.println(Thread.currentThread().getStackTrace());
+            System.exit(1);
+        }
+        return j;
     }
 
 
@@ -265,9 +253,13 @@ public class Jeu extends Observable {
                     find = true;
                 }
             }
-            this.artefactsToPickUp.add(c);
+            this.artefacts.add(c);
             this.plateau[c.getX()][c.getY()] = c;
         }
+    }
+
+    void setArtefacts(ArrayList<Case> art){
+        this.artefacts = art;
     }
 
     public void initHeliport(){
@@ -287,148 +279,56 @@ public class Jeu extends Observable {
 
 
 
-    private boolean asseche = false;
-    private Environment env;
-
-    public void setEnvironment(Environment env) {
-        this.env = env;
-    };
-    /**
-     * declanche la fin du tour du joueur a qui c'est le tour...
-     */
-    public void boutonFDT() {
-        if (!InGame) return;
-
-        if (this.testWin()) {
-            this.InGame = false;
-            this.env.set_endFrame("Gagne !");
-            return;
-        }
-        
-        this.jActif.chercheCle();
-
-        Artefact a = this.jActif.takeArtefact();
-        if (a != null) {
-            this.artefactsToPickUp.remove(this.jActif.getPos());
-        }
-
-
-        this.finTour();
-        String s = testPerdu();
-        if (s != null) {
-            this.InGame = false;
-            this.env.set_endFrame(s);
-            return;
-        }
-
-        this.pos_jActif = (this.pos_jActif + 1) % this.getJoueurs().size();
-        this.jActif = this.getJoueur(this.pos_jActif);
-        this.asseche = false;
-    }
-
     /**
      * 
      * @return : true si le jeu est finis
      */
-    public String testPerdu() {
-        String s = null;
-
+    boolean testPerdu() {
         //test si l'heliport est pas submerger
         if (this.H.isSubmerger()){
-            return "l'Heliphort est submerger..., perdu";
+            this.endString = "l'Heliphort est submerger..., perdu";
+            return true;
         }
 
         // test si une des zones artefacts est pas submerger
-        for(Case c : this.artefactsToPickUp) {
-            if (c.isSubmerger())
-            return String.format("la zone %s est submerger..., perdu", c.getArtefact().toString());
+        for(Case c : this.ctr.artefactOnPlateau()) {
+            if (c.isSubmerger()){
+                this.endString = String.format("la zone %s est submerger..., perdu", c.getArtefact().toString());
+                return true;
+            }
         }
 
         for (Joueur j : this.getJoueurs()) {
             //test si joueur ne c'est pas noye
             if (j.getPos().isSubmerger()) {
-                return String.format("le joueur j%1d est mort..., perdu !", j.num);
+                this.endString = String.format("le joueur j%1d est mort..., perdu !", j.num);
+                return true;
             }
             //test si le joueur peut bouger
             if (!j.canMove()){
-                return String.format("le joueur j%1d ne peut plus bouger..., perdu !", j.num);
+                this.endString =  String.format("le joueur j%1d ne peut plus bouger..., perdu !", j.num);
+                return true;
             }
-        }
-        return null;
-    }
-
-
-
-    public int nbArtefactToPickUp() {
-        return this.artefactsToPickUp.size();
-    }
-
-    public ArrayList<Case> artefactsToPickUp() {
-        return this.artefactsToPickUp;
-    }
-
-    private boolean testWin() {
-        if (this.nbArtefactToPickUp() == 0) {
-            for (Joueur j : this.getJoueurs()) {
-                if (!j.getPos().isHeli())
-                    return false;
-            }
-            return true;
         }
         return false;
     }
 
 
 
-    public void bouton_fl_gauche() {
-        if (!InGame) return;
+    public ArrayList<Case> artefacts() {
+        return this.artefacts;
+    }
 
-        if (this.asseche){
-            this.jActif.asseche(this.jActif.caseLeft());
-            this.asseche = false;
+    boolean testWin() {
+        if (this.ctr.nbArtefactToPickUp() == 0) {
+            for (Joueur j : this.getJoueurs()) {
+                if (!j.getPos().isHeli())
+                    return false;
+            }
+            this.endString = "Gagne !";
+            return true;
         }
-        else this.jActif.deplaceGauche();
-    }
-
-    public void bouton_fl_droite() {
-        if (!InGame) return;
-
-        if (this.asseche) {
-            this.jActif.asseche(this.jActif.caseRight());
-            this.asseche = false;
-        } 
-        else this.jActif.deplaceDroite();
-    }
-
-    public void bouton_fl_bas() {
-        if (!InGame) return;
-
-        if (this.asseche) {
-            this.jActif.asseche(this.jActif.caseDown());
-            this.asseche = false;
-        } 
-        else this.jActif.deplaceBas();
-    }
-
-    public void bouton_fl_haut() {
-        if (!InGame) return;
-
-        if (this.asseche) {
-            this.jActif.asseche(this.jActif.caseUp());
-            this.asseche = false;
-        } else
-            this.jActif.deplaceHaut();
-    }
-
-    public void bouton_asseche() {
-        if (!InGame) return;
-
-        if (this.asseche) {
-            this.jActif.asseche();
-            this.asseche = false;
-        }
-        else
-            this.asseche = true;
+        return false;
     }
 
 
@@ -441,10 +341,12 @@ public class Jeu extends Observable {
 
             }
         }
+        this.ctr.paint(g, TAILLE);
 
-        if (this.asseche) {
-            this.jActif.drawAsseche(g, TAILLE);
-        }
+    }
+
+    public ArrayList<String> getInfoString() {
+        return this.ctr.getInfoString();
     }
 
 
