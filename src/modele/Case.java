@@ -3,13 +3,10 @@ package modele;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 
-import Exception.HorsLimite;
-import observer.*;
-import java.awt.FontMetrics;
-
-import java.awt.Rectangle;
+import observer.VueModele;
 
 /**
  * class Case :
@@ -112,21 +109,6 @@ public class Case {
         return this.art;
     }
 
-    // /**
-    //  * 
-    //  * @return : true si la case possede une clef
-    //  */
-    // public boolean asCle() {
-    //     return this.cle != null;
-    // }
-
-    // /**
-    //  * 
-    //  * @return : renvoie la cle presente sur la case
-    //  */
-    // public Cle getCle() {
-    //     return this.cle;
-    // }
 
     @Override
     /**
@@ -276,18 +258,25 @@ public class Case {
 
 
 
-
+    /**
+     * Dessine un rectangle centre sur la case
+     * @param g
+     * @param TAILLE    : La taille assose a une case (en pixels)
+     */
     public void drawRect(Graphics g, int TAILLE){
-        // if (this == null) return;
         int Xactu = this.getY() * TAILLE + TAILLE / 2;
         int Yactu = this.getX() * TAILLE + TAILLE / 2;
 
         g.setColor(Color.RED);
         g.drawRect(Xactu, Yactu, TAILLE / 6, TAILLE / 6);
     }
-    
+
+    /**
+     * Dessine un rond centre dans la case
+     * @param g
+     * @param TAILLE : La taille assose a une case (en pixels)
+     */    
     public void drawRond(Graphics g, int TAILLE) {
-        // if (this == null) return;
         int Xactu = this.getY() * TAILLE + TAILLE / 2;
         int Yactu = this.getX() * TAILLE + TAILLE / 2;
 
@@ -296,16 +285,13 @@ public class Case {
     }
 
 
-    
-
-
-
 
 
     /**
      * methode pour dessiner une case dans un Graphics de java.awt
-     * @param g     
-     * @param TAILLE
+     * 
+     * @param g
+     * @param TAILLE : La taille assose a une case (en pixels)
      */
     public void paint(Graphics g, int TAILLE) {
 
@@ -321,7 +307,13 @@ public class Case {
 
     }
 
-
+    /**
+     * fonction auxiliaire : dessine les joueurs dans la case si ils sont presents
+     * 
+     * @param g
+     * @param TAILLE : La taille assose a une case (en pixels)
+     * @param c : la couleur du texte
+     */
     protected void paintJoueur(Graphics g, int TAILLE, Color c){
         //si il y a des joueurs fait dessine grossierement un string
         if (this.asPlayer()) {

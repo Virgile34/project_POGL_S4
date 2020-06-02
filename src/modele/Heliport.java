@@ -9,19 +9,27 @@ import java.awt.*;
  */
 public class Heliport extends Case {
 
+	/**
+	 * Constructeur
+	 * @param x
+	 * @param y
+	 */
 	public Heliport(int x, int y) {
+		//un Heliport est comme une case (en memoire au moins)
 		super(x, y);
 	}
-
+	
+	@Override
 	public Color getColor() {
 		return Color.BLACK;
-		// return null;
 	}
 
+	@Override
 	public String toString(){
 		return String.format("%2d %2d : %8s", this.getX(), this.getY(), "Heliport");
 	}
 
+	@Override
 	public boolean isHeli() {
 		return true;
 	}

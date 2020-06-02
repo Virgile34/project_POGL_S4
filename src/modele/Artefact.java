@@ -31,9 +31,12 @@ public enum Artefact {
 	}
 
 	/**
-	 * 		makeFromInt
+	 * makeFromInt
+	 * 
 	 * @param n : entier pour creer un Artefact (n dois appartenir a {0, 1, 2, 3})
-	 * @return : un	Artefact, fonction de n (si n in {0,1,2,3}, sinon leve une ValueException)
+	 * @return : un Artefact, fonction de n (si n in {0,1,2,3}, sinon leve une
+	 *         ValueException)
+	 * @throws ValueException
 	 */
 	public static Artefact makeFromInt(int n) throws ValueException {
 		switch (n) {
@@ -45,6 +48,10 @@ public enum Artefact {
 		}
 	}
 
+	/**
+	 * 
+	 * @return : la cle correspondant a l'artefact
+	 */
 	public Cle toCle(){
 		return this.key;
 	}

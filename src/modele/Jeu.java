@@ -18,7 +18,6 @@ public class Jeu extends Observable {
     
     /********** ATTRIBUTS **********/
 
-
     public final Random rd = new Random();   // un generateur de nombre aleatoire, toujours utile
 
     private final Case[][] plateau;                         //notre plateau de jeu, les cases
@@ -26,13 +25,14 @@ public class Jeu extends Observable {
     private final int nbCol;                                //nombres de colones
     
     private ArrayList<Joueur> players = new ArrayList<>();  //les joueurs de la partie
-    private ArrayList<Case> artefacts = new ArrayList<>();
+    private ArrayList<Case> artefacts = new ArrayList<>();  //les cases des artefacts 
+    //Attention en debut de partie seulement, apres on fait un clone sans changer le plateau pour garder les coordonnes associes a chaque artefact
 
-    private Heliport H;
-    public final float level;                               //entre 0 et 1, (1-probabilite) de trouver une cle sur la case (level = 1 => probailite = 0)
-    private Controleur ctr;
+    private Heliport H;         //notre Heliport
+    public final float level;   //entre 0 et 1, (1-probabilite) de trouver une cle sur la case (level = 1 => probailite = 0)
+    private Controleur ctr;     //le controleur qui s'occupe de faire "bouger" le modele
 
-    public String endString = null;
+    public String endString = null; //le string a affiche sur l'ecran de fin
 
     /**
      * Constructeur :
@@ -51,20 +51,15 @@ public class Jeu extends Observable {
         this.nbCol = nbCol;
         this.plateau = new Case[nbLine][nbCol];
 
+        // on initialise les case, les artefacts et l'heliport
         this.initPlateau();
+
         //init les joueurs (doit etre fais apres car le joueur "s'ajoute" dans la case quand il se crer)
         for (int i = 0 ; i < nbPlayers; i++) this.players.add(new Joueur(this, 0, i));
 
+        // rajoute notre controleur
         this.ctr = new Controleur(this);
 
-    }
-
-    ArrayList<Joueur> getJoueur(Case c){
-        ArrayList<Joueur> arr = new ArrayList<>();
-        for(Joueur j : this.players){
-            if(j.getPos().equals(c)) arr.add(j);
-        }
-        return arr;
     }
 
 
@@ -84,7 +79,6 @@ public class Jeu extends Observable {
 
 
     /**
-     * 
      * @return  : nombre de lignes du plateau
      */
     public int getLine() {
@@ -140,17 +134,26 @@ public class Jeu extends Observable {
      * 
      * @param c
      * @return : la case du plateau ayant les coordonnes de c
-     * @throws ValueException
+     * @throws ValueExcArrayIndexOutOfBoundsExceptioneption
      * ATTENTION : version dev, soyez certrain que les coordonnes sont dans le plateau
      */
     public Case getCasedev(Case c) throws ArrayIndexOutOfBoundsException {
         return this.getCasedev(c.getX(), c.getY());
     }
 
+
+    /**
+     * 
+     * @return : le nombre de joueur dans le jeu
+     */
     public int getNbj(){
         return this.players.size();
     }
 
+    /**
+     * 
+     * @return : le controleur associe au jeu
+     */
     public Controleur getControleur(){
         return this.ctr;
     }
@@ -160,7 +163,8 @@ public class Jeu extends Observable {
 
 
     /**
-     * inonde une case aleatoire non submerge
+     * inonde une case aleatoire non submerge et pas parmis inondeCeTour
+     * @param inondeCeTour : cases a ne pas submerger lors de cette appel
      */
     public Case inondeRdm(ArrayList<Case> inondeCeTour) {
         int r1 = rd.nextInt(nbLine);
@@ -262,6 +266,10 @@ public class Jeu extends Observable {
         this.artefacts = art;
     }
 
+
+    /**
+     * fonctions auxilliaires : initialise l'heliport
+     */
     public void initHeliport(){
         Heliport c = null;
         boolean find = false;
@@ -314,11 +322,17 @@ public class Jeu extends Observable {
     }
 
 
-
+    /**
+     * @return : les artefacts stockes dans l'attribut (sychroniser avec le plateau)
+     */
     public ArrayList<Case> artefacts() {
         return this.artefacts;
     }
 
+    /**
+     * 
+     * @return true si le jeu est gagne
+     */
     boolean testWin() {
         if (this.ctr.nbArtefactToPickUp() == 0) {
             for (Joueur j : this.getJoueurs()) {
@@ -333,7 +347,11 @@ public class Jeu extends Observable {
 
 
 
-
+    /**
+     * Dessine le plateau du jeu
+     * @param g        
+     * @param TAILLE
+     */
     public void paint(Graphics g, int TAILLE){
         for (int i = 0; i < this.getLine(); i++) {
             for (int j = 0; j < this.getCol(); j++) {
@@ -345,6 +363,10 @@ public class Jeu extends Observable {
 
     }
 
+    /**
+     * 
+     * @return : une liste de string, les infos de la partie en cours
+     */
     public ArrayList<String> getInfoString() {
         return this.ctr.getInfoString();
     }
