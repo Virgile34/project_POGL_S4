@@ -170,12 +170,17 @@ public class Joueur {
     }
 
 
-    public boolean donneCle(Cle c){
-        return this.cles.remove(c);
-    }
+    // public boolean donneCle(Cle c){
+    //     return this.cles.remove(c);
+    // }
 
     public void getCle(Cle c){
         this.cles.add(c);
+    }
+
+    public Cle takeCle(Cle c){
+        if (this.cles.remove(c)) return c;
+        else return null;
     }
 
     /**
@@ -300,5 +305,17 @@ public class Joueur {
     static void resetCount(){
         nb = 0;
     }
+
+
+
+	public boolean asCle(Cle c) {
+        for(Cle key : this.cles){ 
+            if (c.equals(key)) {
+                // this.cles.remove(key);
+                return true;
+            }
+        }
+        return false;
+	}
 
 }
