@@ -297,4 +297,8 @@ public class Joueur {
         return String.format("J%d", this.num);
     }
 
+    static void resetCount(){
+        nb = 0;
+    }
+
 }

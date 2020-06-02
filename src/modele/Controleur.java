@@ -142,7 +142,7 @@ public class Controleur {
 			// case Echange :
 			// case ValidEchange :
 
-			//sinon il sert de bouton quitter
+			//sinon il sert de bouton annuler
 			default :
 				this.exitMode();
 				break;

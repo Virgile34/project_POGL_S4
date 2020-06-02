@@ -76,7 +76,7 @@ public class VueCommandes extends JPanel implements Observer {
 
 		this.init_depl();
 		this.init_boutonEch();
-		this.init_validEch();
+		// this.init_validEch();
 		// this.actif = this.deplassement;
 		this.add(this.deplassement);
 
@@ -122,11 +122,12 @@ public class VueCommandes extends JPanel implements Observer {
 				// this.actif = this.echange;
 			}
 			else if (this.jeu.getControleur().isValidEchange()){
+				this.init_validEch();
 				this.makeFrom(validationEch);
 				// this.actif = this.validationEch;
 			}
-			this.repaint();
 		}
+		this.repaint();
 	}
 
 	private void init_depl(){

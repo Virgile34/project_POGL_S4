@@ -17,11 +17,11 @@ public class Main {
          * Pour les besoins du jour on considère la ligne EvenQueue... comme une
          * incantation qu'on pourra expliquer plus tard.
          */
-//        Modele jeu = new Modele(8, 8, 4, 0f);
+       Modele jeu = new Modele(8, 8, 4, 0f);
         // Environment env = new Environment(jeu);
         EventQueue.invokeLater(() -> {
             // Voici le contenu qui nous intéresse.
-            Environment env = new Environment();
+            Environment env = new Environment(jeu);
         });
     }
 }

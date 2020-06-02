@@ -56,7 +56,7 @@ public class Modele extends Observable {
 
         //init les joueurs (doit etre fais apres car le joueur "s'ajoute" dans la case quand il se crer)
         for (int i = 0 ; i < nbPlayers; i++) this.players.add(new Joueur(this, 0, i));
-
+        Joueur.resetCount(); // on redemare le compteur pour avoir des numeros decents
         // rajoute notre controleur
         this.ctr = new Controleur(this);
 
