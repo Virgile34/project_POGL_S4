@@ -75,7 +75,7 @@ public class VueCommandes extends JPanel implements Observer {
 		icon_bas = new ImageIcon(im_bas);
 
 		this.init_depl();
-		this.init_boutonEch();
+		// this.init_boutonEch();
 		// this.init_validEch();
 		// this.actif = this.deplassement;
 		this.add(this.deplassement);
@@ -118,6 +118,7 @@ public class VueCommandes extends JPanel implements Observer {
 
 			}
 			else if (this.jeu.getControleur().isEchange()) {
+				if (this.echange == null) this.init_boutonEch();
 				this.makeFrom(echange);
 				// this.actif = this.echange;
 			}
@@ -171,24 +172,24 @@ public class VueCommandes extends JPanel implements Observer {
 
 
 
-		deplassement = new Vue(new GridLayout(3,1));
-		deplassement.setSize(dim);
+		this.deplassement = new Vue(new GridLayout(3,1));
+		this.deplassement.setSize(dim);
 
-		deplassement.add(boutonFDT_annuler);
+		this.deplassement.add(boutonFDT_annuler);
 		
 		JPanel temp = new JPanel(new GridLayout(1, 3));
 		temp.add(boutonEchange);
 		temp.add(boutonHaut);
 		temp.add(boutonSeche_posActu);
 		
-		deplassement.add(temp);
+		this.deplassement.add(temp);
 
 		temp = new JPanel(new GridLayout(1, 3));
 		temp.add(boutonGauche);
 		temp.add(boutonBas);
 		temp.add(boutonDroite);
 
-		deplassement.add(temp);
+		this.deplassement.add(temp);
 	}
 
 	private void init_boutonEch() {
@@ -219,10 +220,10 @@ public class VueCommandes extends JPanel implements Observer {
 
 
 
-		echange = new Vue(new GridLayout(3, 1));
-		echange.setSize(dim);
+		this.echange = new Vue(new GridLayout(3, 1));
+		this.echange.setSize(dim);
 
-		echange.add(boutonFDT_annuler);
+		// this.echange.add(boutonFDT_annuler);
 
 		JPanel temp = new JPanel(new GridLayout(1, 2));
 		temp.add(artAir);
@@ -243,7 +244,7 @@ public class VueCommandes extends JPanel implements Observer {
 
 
 		this.validationEch = new Vue(new GridLayout(1, possible.size()));
-		validationEch.setSize(dim);
+		this.validationEch.setSize(dim);
 
 		for (int i = 0 ; i < possible.size(); i++){
 			Joueur j = possible.get(i);
@@ -255,7 +256,7 @@ public class VueCommandes extends JPanel implements Observer {
 				this.jeu.getControleur().exitMode();
 				this.jeu.notifyObservers();
 			} );
-			validationEch.add(add);
+			this.validationEch.add(add);
 		}
 	}
 	

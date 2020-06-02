@@ -379,7 +379,7 @@ public class Controleur {
 			System.exit(1);
 		}
 		this.m = m;
-		this.jeu.notifyObservers();
+		// this.jeu.notifyObservers();
 	}
 
 	public void exitMode(){

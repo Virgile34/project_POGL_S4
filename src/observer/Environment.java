@@ -236,8 +236,6 @@ public class Environment implements Observer {
         });
 
 
-
-
         beginFrame.getContentPane().add(panel);
         beginFrame.setLocationRelativeTo(null);
         beginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
