@@ -282,20 +282,20 @@ public class Controleur {
 	}
 
 	public void bouton_echange() {
-		// if (!InGame) return;
-
-		// switch (this.m){
-		// 	case Deplacement : 
-		// 		this.setMode(Mode.Echange);
-		// 		break;
+		if (!InGame) return;
+		
+		switch (this.m){
+			case Deplacement : 
+				this.setMode(Mode.Echange);
+				break;
 				
-		// 	// case Asseche : ;
-		// 	// case Echange : ;
-		// 	// case ValidEchange: ;
-		// 	default : 
-		// 		break;
-		// }
-		// this.jeu.notifyObservers();
+			// case Asseche : ;
+			// case Echange : ;
+			// case ValidEchange: ;
+			default : 
+				break;
+		}
+		this.jeu.notifyObservers();
 	}
 
 	public void selectAir() {
