@@ -68,8 +68,6 @@ public class Environment implements Observer {
         this.jeu.addObserver((Observer) this);
 
 
-        // ile.setEnvironment(this);
-
         this.frame = new JFrame("Modele de l'Île Interdite");
         frame.setBackground(Color.BLACK);
         /**
@@ -87,8 +85,8 @@ public class Environment implements Observer {
          *    même dimension. Cette dimension est calculée en fonction du
          *    nombre de cases à placer et de la dimension du contenant.
          */
-        frame.setLayout(new GridLayout(2, 1));
-
+        frame.setLayout(new GridLayout(1, 2));
+    
         /**Définition des joueurs**/
 
         /** Définition des trois vues et ajout à la fenêtre. */
@@ -96,13 +94,14 @@ public class Environment implements Observer {
         frame.add(this.ileGraphique);
 
 
-        JPanel temp = new JPanel(new GridLayout(1, 2));
         this.commandes = new VueCommandes(this.jeu);
-        frame.add(this.commandes);
         this.info = new VueInformation(this.jeu);
-        frame.add(this.info);
 
-        // frame.add(temp);
+        JPanel temp = new JPanel(new GridLayout(2, 1));
+        temp.add(this.info);
+        temp.add(this.commandes);
+
+        frame.add(temp);
         /**
          * Remarque : on peut passer à la méthode [add] des paramètres
          * supplémentaires indiquant où placer l'élément. Par exemple, si on
@@ -119,7 +118,9 @@ public class Environment implements Observer {
          *  - Indiquer qu'on quitte l'application si la fenêtre est fermée.
          *  - Préciser que la fenêtre doit bien apparaître à l'écran.
          */
-        frame.pack();
+        this.frame.setSize(2 * (this.jeu.getCol()+1) * this.ileGraphique.TAILLE, 
+                (this.jeu.getCol()+1) * this.ileGraphique.TAILLE);
+        // frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);

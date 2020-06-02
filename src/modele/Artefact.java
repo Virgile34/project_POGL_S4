@@ -26,7 +26,7 @@ public enum Artefact {
 	 * 		getColor 
 	 * @return la couleur associe a l'artefact
 	 */
-	Color getColor() {
+	public Color getColor() {
 		return this.c;
 	}
 

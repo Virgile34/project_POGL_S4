@@ -7,6 +7,13 @@ import java.util.ArrayList;
 import java.awt.FontMetrics;
 
 public class Utile {
+	/**
+	 * Dessine le texte dans g avec la font, centre dans rect
+	 * @param g
+	 * @param text
+	 * @param rect
+	 * @param font
+	 */
 	public static void drawCenteredString(Graphics g, String text, Rectangle rect, Font font) {
 		// Get the FontMetrics
 		FontMetrics metrics = g.getFontMetrics(font);
@@ -21,6 +28,12 @@ public class Utile {
 		g.drawString(text, x, y);
 	}
 
+	/**
+	 * renvoie le dernier element de array 
+	 * prerequis : array non vide
+	 * @param array
+	 * @return
+	 */
 	public static Artefact last(ArrayList<Artefact> array) {
 		return array.get(array.size() - 1);
 	}

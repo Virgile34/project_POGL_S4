@@ -171,9 +171,11 @@ public class Joueur {
 
 
     public boolean donneCle(Cle c){
-        int temp = this.cles.size();
-        this.cles.remove(c);
-        return temp != this.cles.size();
+        return this.cles.remove(c);
+    }
+
+    public void getCle(Cle c){
+        this.cles.add(c);
     }
 
     /**
@@ -257,7 +259,7 @@ public class Joueur {
     }
 
     private void launchFDT(){
-        this.jeu.getControleur().exitAsseche();
+        this.jeu.getControleur().exitMode();
         if (!this.asAction()) this.jeu.getControleur().boutonFDT();
     }
 

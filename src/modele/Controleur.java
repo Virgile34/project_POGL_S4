@@ -12,8 +12,10 @@ public class Controleur {
 	private Joueur jActif; // a qui c'est le tour
 	private int pos_jActif = 0;
 	private boolean InGame = true;
-	private boolean asseche = false;
-	private boolean echange = false;
+	// private boolean asseche = false;
+	// private boolean echange = false;
+	private Cle toGive = null;
+	private Mode m = Mode.Deplacement;
 
 	/**
 	 * Constructeur
@@ -51,13 +53,6 @@ public class Controleur {
 		return this.InGame;
 	}
 
-	/**
-	 * 
-	 * @return true le mode secher a etait selectionner (prochaine fleche pour secher pas se deplacer)
-	 */
-	public boolean isSecheMode() {
-		return this.asseche;
-	}
 
 	/**
 	 * ATTENTION c'est pas la position dans l'array des joueurs mais bien le num du
@@ -74,12 +69,18 @@ public class Controleur {
 		return this.jActif.actionLeft();
 	}
 
-	/**
-	 * 
-	 * @return le joueur actir
-	 */
-	Joueur getJoueurActif() {
-		return this.jActif;
+	public ArrayList<Joueur> joueursMemePos(){
+		ArrayList<Joueur> j = this.jActif.getPos().getJoueurs();
+		j.remove(this.jActif);
+		return j;
+	}
+
+	public Cle toGive(){
+		return this.toGive;
+	}
+
+	public void resetToGive(){
+		this.toGive = null;
 	}
 
 	/**
@@ -96,14 +97,6 @@ public class Controleur {
 	}
 
 	/**
-	 * quit le mode pour assecher une case
-	 */
-	public void exitAsseche() {
-		this.asseche = false;
-	}
-
-
-	/**
 	 * 
 	 * @return : le nombre d'artefacts a ramasser
 	 */
@@ -115,49 +108,47 @@ public class Controleur {
 	 * declanche la fin du tour du joueur a qui c'est le tour...
 	 */
 	public void boutonFDT() {
-		if (!InGame){
-			//verifie q'on a pas quitte le jeu
-			this.jeu.notifyObservers();
+		if (!InGame)
 			return;
+
+		switch(this.m){
+			case Deplacement :
+				//on realise alors la fin du tour
+				this.jActif.chercheCle();
+
+				Artefact a = this.jActif.takeArtefact();
+				if (a != null) {
+					this.artefactToPickUp.remove(this.jActif.getPos());
+				}
+
+				//test la fin de la partie
+				if (this.jeu.testWin()) {
+					this.InGame = false;
+					break;
+				}
+
+				this.finTour();
+				if (this.jeu.testPerdu()) {
+					this.InGame = false;
+					break;
+				}
+
+				//met a jour le joueurActif
+				this.pos_jActif = (this.pos_jActif + 1) % this.jeu.getNbj();
+				this.jActif = this.jeu.getJoueur(this.pos_jActif);
+				break;
+
+			// case Asseche : 
+			// case Echange :
+			// case ValidEchange :
+
+			//sinon il sert de bouton quitter
+			default :
+				this.exitMode();
+				break;
 		}
-
-		if (this.asseche) {
-			//fonction du bouton en mode asseche
-			this.asseche = false;
-			this.jeu.notifyObservers();
-			return;
-		}
-
-		//sinon on effectue une fin de tour normale
-		this.jActif.chercheCle();
-
-		Artefact a = this.jActif.takeArtefact();
-		if (a != null) {
-			this.artefactToPickUp.remove(this.jActif.getPos());
-		}
-
-
-		//test la fin de la partie
-		if (this.jeu.testWin()) {
-			this.InGame = false;
-			this.jeu.notifyObservers();
-			return;
-		}
-
-		this.finTour();
-		if (this.jeu.testPerdu()) {
-			if (this.jeu.testPerdu()) {
-				this.InGame = false;
-				this.jeu.notifyObservers();
-				return;
-			}
-		}
-
-		//met a jour le joueurActif
-		this.pos_jActif = (this.pos_jActif + 1) % this.jeu.getNbj();
-		this.jActif = this.jeu.getJoueur(this.pos_jActif);
-		this.asseche = false;
 		this.jeu.notifyObservers();
+
 	}
 
 	/**
@@ -167,14 +158,21 @@ public class Controleur {
 		if (!InGame)
 			return;
 
-		if (this.asseche) {
-			//en mode asseche
-			this.jActif.asseche(this.jActif.caseLeft());
-			this.asseche = false;
-		} else
-			this.jActif.deplaceGauche();
-			//sinon on se deplace
-	
+		switch (this.m) {
+			case Deplacement:
+				this.jActif.deplaceGauche();
+				break;
+
+			case Asseche:
+				this.jActif.asseche(this.jActif.caseLeft());
+				this.exitMode();
+				break;
+
+			// case Echange:
+			// case ValidEchange:
+			default :
+				return;
+		}
 		this.jeu.notifyObservers();
 
 	}
@@ -186,11 +184,21 @@ public class Controleur {
 		if (!InGame)
 			return;
 
-		if (this.asseche) {
-			this.jActif.asseche(this.jActif.caseRight());
-			this.asseche = false;
-		} else
-			this.jActif.deplaceDroite();
+		switch (this.m) {
+			case Deplacement:
+				this.jActif.deplaceDroite();
+				break;
+
+			case Asseche:
+				this.jActif.asseche(this.jActif.caseRight());
+				this.exitMode();
+				break;
+
+			// case Echange:
+			// case ValidEchange:
+			default:
+				return;
+		}
 		this.jeu.notifyObservers();
 
 	}
@@ -202,11 +210,21 @@ public class Controleur {
 		if (!InGame)
 			return;
 
-		if (this.asseche) {
-			this.jActif.asseche(this.jActif.caseDown());
-			this.asseche = false;
-		} else
-			this.jActif.deplaceBas();
+		switch (this.m) {
+			case Deplacement : 
+				this.jActif.deplaceBas();
+				break;
+			case Asseche : 				
+				this.jActif.asseche(this.jActif.caseDown());
+				this.exitMode();
+				break;
+
+			// case Echange :
+			// case ValidEchange: ;	
+			default : 
+				return;	
+	
+		}
 		this.jeu.notifyObservers();
 
 	}
@@ -218,11 +236,21 @@ public class Controleur {
 		if (!InGame)
 			return;
 
-		if (this.asseche) {
-			this.jActif.asseche(this.jActif.caseUp());
-			this.asseche = false;
-		} else
-			this.jActif.deplaceHaut();
+		switch (this.m) {
+			case Deplacement : 
+				this.jActif.deplaceHaut();
+				break;
+
+			case Asseche : 				
+				this.jActif.asseche(this.jActif.caseUp());
+				this.exitMode();
+				break;
+
+			// case Echange : ;
+			// case ValidEchange: ;	
+			default : 
+				return;	
+		}
 		this.jeu.notifyObservers();
 
 	}
@@ -234,31 +262,80 @@ public class Controleur {
 		if (!InGame)
 			return;
 
-		if (this.asseche) {
-			//en mode assech
-			this.jActif.asseche();
-			this.asseche = false;
+		switch (this.m) {
+			case Deplacement : 
+				this.setMode(Mode.Asseche);
+				break;
+			
+			case Asseche : 
+				this.jActif.asseche();
+				this.exitMode();
+				break;
+			
+			// case Echange : ;
+			// case ValidEchange: ;		
+			default : 
+				return;
 
-		} else	//pour l'activer sinon
-			this.asseche = true;
+		}
 		this.jeu.notifyObservers();
-
 	}
 
 	public void bouton_echange() {
-		if (this.asseche || !InGame)
-			return;
-		
-		if (this.echange){
-			// this.
+		// if (!InGame) return;
+
+		// switch (this.m){
+		// 	case Deplacement : 
+		// 		this.setMode(Mode.Echange);
+		// 		break;
+				
+		// 	// case Asseche : ;
+		// 	// case Echange : ;
+		// 	// case ValidEchange: ;
+		// 	default : 
+		// 		break;
+		// }
+		// this.jeu.notifyObservers();
+	}
+
+	public void selectAir() {
+		if (!InGame) return;
+
+		if (this.isEchange() && this.jActif.donneCle(Cle.Air)){ 
+			this.toGive = Cle.Air;
+			this.setMode(Mode.ValidEchange);
+			this.jeu.notifyObservers();
 		}
-		else 
-			this.echange = true;
-		this.jeu.notifyObservers();
+	}
 
-		
+	public void selectEau() {
+		if (!InGame) return;
 
-		
+		if (this.isEchange() && this.jActif.donneCle(Cle.Eau)){ 
+			this.toGive = Cle.Eau;
+			this.setMode(Mode.ValidEchange);
+			this.jeu.notifyObservers();
+		}
+	}
+
+	public void selectFeu() {
+		if (!InGame) return;
+
+		if (this.isEchange() && this.jActif.donneCle(Cle.Feu)){ 
+			this.toGive = Cle.Feu;
+			this.setMode(Mode.ValidEchange);
+			this.jeu.notifyObservers();
+		}
+	}
+
+	public void selectTerre() {
+		if (!InGame) return;
+
+		if (this.isEchange() && this.jActif.donneCle(Cle.Terre)){ 
+			this.toGive = Cle.Terre;
+			this.setMode(Mode.ValidEchange);
+			this.jeu.notifyObservers();
+		}
 	}
 
 	/**
@@ -267,7 +344,7 @@ public class Controleur {
 	 * @param TAILLE	: peint les case a secher pour le joueur selectionne si on est en mode asseche
 	 */
 	public void paint(Graphics g, int TAILLE){
-		if (this.isSecheMode()) {
+		if (this.isAsseche()) {
 			this.jActif.drawAsseche(g, TAILLE);
 		}
 	}
@@ -282,5 +359,52 @@ public class Controleur {
         strs.add("C'est au joueur " + this.getNumJoueur() + " de jouer");
         strs.add("Il vous reste " + this.getActionLeft() + " actions à réaliser avant la fin du tour");
 		return strs;
+	}
+
+	private void setMode(Mode m){
+		if (this.m != Mode.Deplacement && (this.m != Mode.Echange && m != Mode.ValidEchange)){
+			System.out.println("error, on set un mode sans venir du mode de base");
+			System.exit(1);
+		}
+		this.m = m;
+		this.jeu.notifyObservers();
+	}
+
+	public void exitMode(){
+		this.m = Mode.Deplacement;
+		this.jeu.notifyObservers();
+	}
+
+	public boolean isDeplace(){
+		return this.m == Mode.Deplacement;
+	}
+
+	public boolean isAsseche(){
+		return this.m == Mode.Asseche;
+	}
+
+	public boolean isEchange(){
+		return this.m == Mode.Echange;
+	}
+
+	public boolean isValidEchange(){
+		return this.m == Mode.ValidEchange;
+	}
+
+	private Mode old_state = Mode.Deplacement;
+	public boolean stateChanged(){
+		boolean b = old_state.equals(this.m);
+		if (!b) {
+			old_state = this.m;
+			return true;
+		}
+		return false;
+	}
+
+	enum Mode{
+		Deplacement,
+		Asseche,
+		Echange,
+		ValidEchange;
 	}
 }

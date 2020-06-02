@@ -23,7 +23,7 @@ public class VueModele extends JPanel implements Observer {
          * taille d'affichage.
          */
         Dimension dim = new Dimension(TAILLE * jeu.getLine(), TAILLE * jeu.getCol());
-        this.setPreferredSize(dim);
+        this.setSize(dim);
     }
 
     /**
